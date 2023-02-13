@@ -9,7 +9,7 @@ import time
 def get_argv():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('proj', type=str)
-    parser.add_argument('-s', '--save', type=str)
+    parser.add_argument('-s', '--save', type=str, default='report.txt')
     parser.add_argument('-m', '--module', nargs='+')
     parser.add_argument('-t', '--limit_time', type=int)
     return parser.parse_args()
@@ -34,7 +34,7 @@ def main(argv):
         
                 
     # create file
-    rep_file = open('report.txt', 'w+')
+    rep_file = open(argv.save, 'w+')
     rep_file.write(f'file name: {argv.proj}\n')
     rep_file.write(f'arch: {proj.arch}\n')
     rep_file.write(f'start time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}')
