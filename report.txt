@@ -1,3 +1,0 @@
-file name: sample/test
-arch: <Arch X86 (LE)>
-start time: 2023-02-13 12:25:44
