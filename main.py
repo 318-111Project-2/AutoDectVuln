@@ -18,7 +18,6 @@ def main(argv):
     # load binary file
     proj = angr.Project(argv.proj)
     os.system(f'checksec {argv.proj}')
-    print(argv.module)
 
     # modules
     if argv.module==['all']:
