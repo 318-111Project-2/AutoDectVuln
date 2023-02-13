@@ -40,7 +40,7 @@ def main(argv):
 
 if __name__=='__main__':
     # magic
-    print(pyfiglet.figlet_format('3 1 8 Project - 2', font = 'slant', justify='center'))
+    print(pyfiglet.figlet_format('AutoDectVuln', font = 'slant', justify='center'))
     
     # get arguments
     argv = get_argv()
