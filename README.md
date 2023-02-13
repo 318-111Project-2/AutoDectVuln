@@ -1,5 +1,13 @@
 # AutoDectVuln
 
+## Usage
+
+- Prepare
+    - angr
+    - pwntools
+    - argparse
+    - pyfiglet
+
 ## Sample Testing
 - sample file in sample/.
 ```sh
