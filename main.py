@@ -22,7 +22,7 @@ def main(argv):
     # modules
     if argv.module==['all']:
         info('find all()')
-    elif argv.module==['stack']:
+    elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
     elif argv.module==['heap_over_flow']:
         info('find HeapOverFlow()')
