@@ -1,3 +1,7 @@
+/*
+ 	x86 (32bits) 	$ gcc -m32 sof1.c -o sof1
+	x86_64 (64bits) $ gcc sof1.c -o sof1
+ */
 #include <stdio.h>
 
 int main() {
