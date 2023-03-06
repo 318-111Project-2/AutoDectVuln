@@ -4,12 +4,14 @@
  */
 #include <stdio.h>
 
-int main() {
-	char str[10];
-	
+void  vuln(char str[]) {
 	// stack over flow
 	scanf("%20s", str);
-	
+}
+
+int main() {
+	char str[10];
+	vuln(str);
 	printf("%s", str);
 	return 0;
 }
