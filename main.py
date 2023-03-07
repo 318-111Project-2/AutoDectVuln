@@ -3,15 +3,16 @@ import angr
 import argparse
 import pyfiglet
 import os
-import sys
 import time
+
+from modules.StackOverFlow import StackOverFlow
 
 def get_argv():
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('proj', type=str)
-    parser.add_argument('-s', '--save', type=str, default='report.txt')
-    parser.add_argument('-m', '--module', nargs='+')
-    parser.add_argument('-t', '--limit_time', type=int)
+    parser.add_argument('proj', type=str, help="binary path")
+    parser.add_argument('-s', '--save', type=str, default='report.txt', help="report file path")
+    parser.add_argument('-m', '--module', nargs='+', default=['all'], help="vuln module")
+    parser.add_argument('-t', '--limit_time', type=int, default=60, help="limit time")
     return parser.parse_args()
 
 def main(argv):
@@ -19,11 +20,15 @@ def main(argv):
     proj = angr.Project(argv.proj)
     os.system(f'checksec {argv.proj}')
 
+    # get file path
+    file_path = os.path.abspath(argv.proj)
+
     # modules
     if argv.module==['all']:
         info('find all()')
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
+        StackOverFlow(file_path)
     elif argv.module==['heap_over_flow']:
         info('find HeapOverFlow()')
     elif argv.module==['format_string']:
