@@ -30,8 +30,7 @@ def main(argv):
         info('find FormatStringBug()')
     else:
         info('input error')
-        
-                
+            
     # create file
     rep_file = open(argv.save, 'w+')
     rep_file.write(f'file name: {argv.proj}\n')
