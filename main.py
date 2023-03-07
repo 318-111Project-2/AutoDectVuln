@@ -7,6 +7,7 @@ import time
 
 from lib import StackOverFlow
 
+# get argv
 def get_argv():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('proj', type=str, help="binary path")
