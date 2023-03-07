@@ -10,7 +10,7 @@ from lib import StackOverFlow
 def get_argv():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('proj', type=str, help="binary path")
-    parser.add_argument('-s', '--save', type=str, default='report.txt', help="report file path")
+    parser.add_argument('-s', '--save', type=str, default='report/report.txt', help="report file path")
     parser.add_argument('-m', '--module', nargs='+', default=['all'], help="vuln module")
     parser.add_argument('-t', '--limit_time', type=int, default=60, help="limit time")
     return parser.parse_args()
@@ -28,7 +28,6 @@ def main(argv):
         info('find all()')
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
-        StackOverFlow(file_path)
     elif argv.module==['heap_over_flow']:
         info('find HeapOverFlow()')
     elif argv.module==['format_string']:
