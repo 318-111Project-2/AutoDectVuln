@@ -5,7 +5,7 @@ import pyfiglet
 import os
 import time
 
-from modules.StackOverFlow import StackOverFlow
+from lib import StackOverFlow
 
 def get_argv():
     parser = argparse.ArgumentParser(description='')
