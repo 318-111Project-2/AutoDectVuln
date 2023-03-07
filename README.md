@@ -2,7 +2,7 @@
 
 ## Usage
 
-- Prepare
+- Needed packages
     - angr
     - pwntools
     - argparse
