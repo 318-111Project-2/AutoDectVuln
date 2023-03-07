@@ -5,7 +5,7 @@ import pyfiglet
 import os
 import time
 
-from lib import StackOverFlow
+from lib.StackOverFlow import StackOverFlow
 
 # get argv
 def get_argv():
@@ -29,6 +29,7 @@ def main(argv):
         info('find all()')
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
+        # StackOverFlow(file_path)
     elif argv.module==['heap_over_flow']:
         info('find HeapOverFlow()')
     elif argv.module==['format_string']:
