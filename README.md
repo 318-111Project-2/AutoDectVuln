@@ -20,5 +20,5 @@
     ```
 - Test sample file 
     ```sh
-    $ python main.py ./path/to/binary -m module -s ./path/to/save -t limit_time
+    python main.py ./path/to/binary -m module -s ./path/to/save -t limit_time
     ```
