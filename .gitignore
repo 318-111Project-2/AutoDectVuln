@@ -1,3 +1,4 @@
 *.i64
 report.txt
-*/__pycache__/*.pyc
+**/__pycache__/*.pyc
+**/build/*
