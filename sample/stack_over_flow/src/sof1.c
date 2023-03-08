@@ -1,6 +1,11 @@
 /*
  	x86 (32bits) 	$ gcc -m32 sof1.c -o sof1
-	x86_64 (64bits) $ gcc sof1.c -o sof1
+	x86_64 (64bits) $ gcc sof1.c -o sof1 -fcf-protection=none -fno-stack-protector
+
+	-fcf-protection=none
+		disable intel cet
+	-fno-stack-protector
+		disable canary
  */
 #include <stdio.h>
 
