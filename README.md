@@ -8,7 +8,7 @@
 
 ## Sample Testing
 
-- Make sample
+- make sample
     ```sh
     make
     ```
