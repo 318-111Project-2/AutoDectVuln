@@ -1,0 +1,4 @@
+angr
+pwntools
+argparse
+pyfiglet
