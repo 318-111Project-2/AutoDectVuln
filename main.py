@@ -4,6 +4,7 @@ import argparse
 import pyfiglet
 import os
 import time
+import pathlib
 
 from lib.StackOverFlow import StackOverFlow
 
@@ -19,7 +20,7 @@ def get_argv():
 def main(argv):
     # load binary file
     proj = angr.Project(argv.proj)
-    os.system(f'checksec {argv.proj}')
+    os.system(f'pwn checksec {argv.proj}')
 
     # get file path
     file_path = os.path.abspath(argv.proj)
@@ -37,7 +38,10 @@ def main(argv):
     else:
         info('input error')
             
-    # create file
+    # create report file path
+    pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True) 
+
+    # write report
     rep_file = open(argv.save, 'w+')
     rep_file.write(f'file name: {argv.proj}\n')
     rep_file.write(f'arch: {proj.arch}\n')
