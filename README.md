@@ -1,12 +1,10 @@
 # AutoDectVuln
 
-## Usage
+## Install
 
-- Needed packages
-    - angr
-    - pwntools
-    - argparse
-    - pyfiglet
+```sh
+./install.sh
+```
 
 ## Sample Testing
 
