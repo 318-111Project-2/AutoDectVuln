@@ -8,15 +8,26 @@
 		disable canary
  */
 #include <stdio.h>
+#include <string.h>
+
 
 void  vuln(char str[]) {
+	// stack over flow
+	scanf("%20s", str);
+}
+void  vuln2(char str[]) {
 	// stack over flow
 	scanf("%20s", str);
 }
 
 int main() {
 	char str[10];
+	char str2[10];
 	vuln(str);
-	printf("%s", str);
+	if(strcmp(str, "hi")==0){
+		vuln2(str2);
+		printf("hi");
+	}else
+		printf("bye");
 	return 0;
 }

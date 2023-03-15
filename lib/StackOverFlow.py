@@ -1,8 +1,11 @@
 import angr
 
+def print_result(act):
+    print("stdin:", act.posix.dumps(0))
+    print("stdout:", act.posix.dumps(1))
+
 def check_head(act):
     block = act.project.factory.block(act.addr)
-    print(block.pp())
     insns = block.capstone.insns
     
     # find push rbp; mov rbp, rsp
@@ -27,7 +30,7 @@ def check_head(act):
     # 儲存function 的 rbp, key 為 return address
     act.globals['rbp_list'][ret_addr]=rbp
     
-    print("Found head")
+    # print("Found head")
 
 def check_end(act):
     block = act.project.factory.block(act.addr)
@@ -42,29 +45,28 @@ def check_end(act):
     # print(insns1, insns2)
     if( not (insns1=="leave" and insns2=="ret") ):
         return
-    print("Found end")
+    # print("Found end")
     
-    # check rbp symbolic
     rbp=act.regs.rbp
     rbp_stack = act.memory.load(rbp, 8, endness=angr.archinfo.Endness.LE)
     ret_addr=act.callstack.ret_addr
     origin_rbp=act.globals['rbp_list'][ret_addr]
-
-    print("origin", origin_rbp)
-    print("rbp", rbp)
     
+    # check rbp symbolic
     if(rbp_stack.symbolic):
         act.memory.store(rbp, origin_rbp)
         
         print("rbp symbolic")
+        print_result(act)
 
-    # ret_stack=act.memory.load(rbp+8, 8, endness=angr.archinfo.Endness.LE)
-    # if(ret_stack.symbolic):
-    #     print(act.memory.load(rbp+8, 8, endness=angr.archinfo.Endness.LE))
-    #     print(act.memory.load(ret_addr, 8, endness=angr.archinfo.Endness.LE))
-    #     # act.memory.store(rbp+8, ret_addr)
+    # check return address symbolic
+    ret_stack=act.memory.load(rbp+8, 8, endness=angr.archinfo.Endness.LE)
+    if(ret_stack.symbolic):
+        origin_ret_addr=act.solver.BVV(act.callstack.ret_addr, 64)
+        act.memory.store(rbp+8, origin_ret_addr, endness=angr.archinfo.Endness.LE)
 
-    #     print("ret symbolic")
+        print("ret symbolic")
+        print_result(act)
         
 
 def StackOverFlow(file_path):
