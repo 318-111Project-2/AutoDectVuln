@@ -2,3 +2,5 @@ angr
 pwntools
 argparse
 pyfiglet
+os
+time
