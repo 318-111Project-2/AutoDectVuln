@@ -12,6 +12,12 @@
     # interactive interface
     sudo docker run -it --rm <tag name> /bin/bash
     ```
+or
+
+- docker-compose.yml
+    ```sh
+    docker-compose up
+    ```
 
 ## Sample Testing
 
