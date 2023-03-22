@@ -9,6 +9,7 @@
 
 - Docker
     ```sh
+    # build
     sudo docker build -t <tag name> .
 
     # run 
