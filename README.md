@@ -1,10 +1,11 @@
 # AutoDectVuln
 
-## Install
+## Getting Started
 
-```sh
-./install.sh
-```
+- Dockerfile
+    ```sh
+    sudo docker build -t <tag name> .
+    ```
 
 ## Sample Testing
 
