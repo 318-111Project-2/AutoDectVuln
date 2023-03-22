@@ -29,7 +29,7 @@ or
     docker-compose up 
 
     # run with interactive interface
-    sudo docker run -it autodetectvul /bin/bash
+    sudo docker run -it autodetectvuln /bin/bash
     ```
 
 ## Sample Testing
