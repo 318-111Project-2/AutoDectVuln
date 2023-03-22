@@ -12,7 +12,7 @@
     # build
     sudo docker build -t <tag name> .
 
-    # run 
+    # run (option) 
     sudo docker run <tag name>
 
     # run with interactive interface
