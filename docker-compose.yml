@@ -1,7 +1,8 @@
 version: '3'
 
 services:
-  shell:
+  autodetectvul:
+    image: autodetectvul
     build: .
     ports:
       - "5000:5000"

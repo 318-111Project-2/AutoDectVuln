@@ -39,7 +39,7 @@ def main(argv):
         info('input error')
             
     # create report file path
-    pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True) 
+    pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True)
 
     # write report
     rep_file = open(argv.save, 'w+')

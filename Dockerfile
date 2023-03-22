@@ -8,7 +8,12 @@ RUN apt-get update && \
     apt-get install -y python3  \
                        python3-pip \
                        curl \
-                       make
+                       make && \
+    pip install angr \
+                pwntools \
+                pyfiglet \
+                argparse
+
 WORKDIR /home/
 
 COPY . /home/

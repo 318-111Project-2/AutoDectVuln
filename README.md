@@ -2,21 +2,33 @@
 
 ## Getting Started
 
-- Dockerfile
+- Ubuntu 20.04
+    ```
+    ./install.sh
+    ```
+
+- Docker
     ```sh
     sudo docker build -t <tag name> .
 
     # run 
     sudo docker run <tag name>
 
-    # interactive interface
+    # run with interactive interface
     sudo docker run -it --rm <tag name> /bin/bash
+
+    # install
+    ./install.sh
     ```
 or
 
 - docker-compose.yml
     ```sh
-    docker-compose up
+    # up
+    docker-compose up 
+
+    # run with interactive interface
+    sudo docker run -it autodetectvul /bin/bash
     ```
 
 ## Sample Testing
