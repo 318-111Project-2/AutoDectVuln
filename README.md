@@ -6,6 +6,9 @@
     ```sh
     sudo docker build -t <tag name> .
 
+    # run 
+    sudo docker run <tag name>
+
     # interactive interface
     sudo docker run -it --rm <tag name> /bin/bash
     ```
