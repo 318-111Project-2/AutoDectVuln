@@ -5,6 +5,9 @@
 - Dockerfile
     ```sh
     sudo docker build -t <tag name> .
+
+    # interactive interface
+    sudo docker run -it --tm <tag name> /bin/bash
     ```
 
 ## Sample Testing
