@@ -20,10 +20,13 @@ def get_argv():
 def main(argv):
     # load binary file
     proj = angr.Project(argv.proj)
-    os.system(f'pwn checksec {argv.proj}')
-
+    
     # get file path
     file_path = os.path.abspath(argv.proj)
+    
+    # print checksec
+    elf = ELF(file_path, checksec=False)
+    print(elf.checksec())
 
     # modules
     if argv.module==['all']:
@@ -53,7 +56,7 @@ if __name__=='__main__':
     
     # get arguments
     argv = get_argv()
-    print(argv)
+    #print(argv)
 
     # entry points
     main(argv)
