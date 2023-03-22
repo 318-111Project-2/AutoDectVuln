@@ -7,7 +7,7 @@
     ./install.sh
     ```
 
-- Docker
+- Dockerfile
     ```sh
     # build
     sudo docker build -t <tag name> .
