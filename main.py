@@ -17,6 +17,7 @@ def get_argv():
     parser.add_argument('-t', '--limit_time', type=int, default=60, help="limit time")
     return parser.parse_args()
 
+# main function
 def main(argv):
     # load binary file
     proj = angr.Project(argv.proj)
