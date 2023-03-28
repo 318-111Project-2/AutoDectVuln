@@ -1,8 +1,16 @@
 import angr
 
 def print_result(act):
+    ret_addr = act.callstack.ret_addr
+    func_addr = act.globals['func_addr_list'][ret_addr]
+    
     print("stdin:", act.posix.dumps(0))
     print("stdout:", act.posix.dumps(1))
+
+    # get function name
+    cfg = act.project.analyses.CFGFast()
+    func = cfg.kb.functions[func_addr]
+    print("stack_over_flow:", func.name)
 
 # check the head of basic block
 def check_head(act):
@@ -27,8 +35,11 @@ def check_head(act):
     ret_addr = act.callstack.ret_addr
     rbp = act.regs.rbp
 
-    # save function  rbp (key=return address)
+    # save function rbp (key=return address)
     act.globals['rbp_list'][ret_addr] = rbp
+
+    # save function address (key=return address)
+    act.globals['func_addr_list'][ret_addr] = act.addr
     
     # print("Found head")
 
@@ -54,21 +65,27 @@ def check_end(act):
     ret_addr = act.callstack.ret_addr
     origin_rbp = act.globals['rbp_list'][ret_addr]
     
-    # check rbp symbolic
-    if(rbp_stack.symbolic):
-        act.memory.store(rbp, origin_rbp)
-        
-        print("rbp symbolic")
-        #print_result(act)
-
     # check return address symbolic
     ret_stack = act.memory.load(rbp+8, 8, endness=angr.archinfo.Endness.LE)
     if(ret_stack.symbolic):
         origin_ret_addr = act.solver.BVV(act.callstack.ret_addr, 64)
         act.memory.store(rbp+8, origin_ret_addr, endness=angr.archinfo.Endness.LE)
-
         print("ret symbolic")
-        #print_result(act)
+
+        # 假如ret symbolic，則rbp也會是symbolic，因此不用再檢查rbp，不讓 print_result() 重複輸出
+        act.memory.store(rbp, origin_rbp)
+        print("rbp symbolic")
+
+        print_result(act)
+        return
+
+    # check rbp symbolic
+    if(rbp_stack.symbolic):
+        act.memory.store(rbp, origin_rbp)
+        
+        print("rbp symbolic")
+        print_result(act)
+
         
 def StackOverFlow(file_path):
     # binary process
@@ -82,6 +99,8 @@ def StackOverFlow(file_path):
     
     # save rbp
     initial_state.globals['rbp_list']={}
+    # save function address
+    initial_state.globals['func_addr_list']={}
 
     # main exlpore
     simgr = proj.factory.simgr(initial_state)
