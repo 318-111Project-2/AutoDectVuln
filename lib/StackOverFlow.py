@@ -1,3 +1,4 @@
+from pwn import *
 import angr
 
 def print_result(act):
@@ -8,7 +9,7 @@ def print_result(act):
 def check_head(act):
     block = act.project.factory.block(act.addr)
     insns = block.capstone.insns
-    
+
     # find push rbp; mov rbp, rsp
     if( not (len(insns)>=2)):
         return
@@ -91,3 +92,14 @@ def StackOverFlow(file_path):
             check_end(act)
 
         simgr.step()
+
+if __name__=='__main__':
+    
+    info(f'Stack Over Flow case:')    
+    file_path = 'sample/build/sof1_64bits'
+    StackOverFlow(file_path)
+    print('\n')
+
+    info(f'no Stack Over Flow case:')    
+    file_path = 'sample/build/no_sof1'
+    StackOverFlow(file_path)
