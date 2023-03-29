@@ -4,13 +4,12 @@ CFLAGS_NP = -fcf-protection=none -fno-stack-protector
 make:
 	[ -d sample/build ] || mkdir -p sample/build
 
-	$(CC) sample/src/sof1.c -o sample/build/sof1_32bits $(CFLAPS_NP)
-	$(CC) sample/src/sof1.c -o sample/build/sof1_64bits $(CFLAGS_NP)
-	$(CC) sample/src/no_sof1.c -o sample/build/no_sof1_64bits $(CFLAGS_NP)
+	$(CC) sample/src/sof.c -o sample/build/sof $(CFLAGS_NP)
+	$(CC) sample/src/no_sof.c -o sample/build/no_sof $(CFLAGS_NP)
 sof:
 	[ -d sample/build ] || mkdir -p sample/build
 
-	$(CC) sample/src/sof1.c -o sample/build/sof1_32bits $(CFLAPS_NP)
-	$(CC) sample/src/sof1.c -o sample/build/sof1_64bits $(CFLAGS_NP)
+	$(CC) sample/src/sof.c -o sample/build/sof $(CFLAPS_NP)
+	$(CC) sample/src/no_sof.c -o sample/build/no_sof $(CFLAGS_NP)
 clean:
-	rm sample/build/sof1_32bits sample/build/sof1_64bits sample/build/no_sof1_64bits
+	rm sample/build/sof sample/build/no_sof
