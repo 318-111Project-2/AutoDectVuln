@@ -4,14 +4,22 @@ import angr
 def print_result(act):
     ret_addr = act.callstack.ret_addr
     func_addr = act.globals['func_addr_list'][ret_addr]
-    
-    print("stdin:", act.posix.dumps(0))
-    print("stdout:", act.posix.dumps(1))
+
+    #print("stdin:", act.posix.dumps(0))
+    #print("stdout:", act.posix.dumps(1))
 
     # get function name
     cfg = act.project.analyses.CFGFast()
     func = cfg.kb.functions[func_addr]
     print("stack_over_flow:", func.name)
+
+    print('=============== Process ================')
+    for addr in act.history.bbl_addrs:
+        try:
+            print(cfg.kb.functions[addr].name)
+        except:
+            pass
+    print('========================================')
 
 # check the head of basic block
 def check_head(act):
@@ -83,7 +91,6 @@ def check_end(act):
     # check rbp symbolic
     if(rbp_stack.symbolic):
         act.memory.store(rbp, origin_rbp)
-        
         print("rbp symbolic")
         print_result(act)
 
@@ -113,12 +120,11 @@ def StackOverFlow(file_path):
         simgr.step()
 
 if __name__=='__main__':
-    
     info(f'Stack Over Flow case:')    
-    file_path = 'sample/build/sof1_64bits'
+    file_path = 'sample/build/sof'
     StackOverFlow(file_path)
     print('\n')
 
     info(f'no Stack Over Flow case:')    
-    file_path = 'sample/build/no_sof1'
+    file_path = 'sample/build/no_sof'
     StackOverFlow(file_path)
