@@ -6,10 +6,11 @@ make:
 
 	$(CC) sample/src/sof1.c -o sample/build/sof1_32bits $(CFLAPS_NP)
 	$(CC) sample/src/sof1.c -o sample/build/sof1_64bits $(CFLAGS_NP)
+	$(CC) sample/src/no_sof1.c -o sample/build/no_sof1_64bits $(CFLAGS_NP)
 sof:
 	[ -d sample/build ] || mkdir -p sample/build
 
 	$(CC) sample/src/sof1.c -o sample/build/sof1_32bits $(CFLAPS_NP)
 	$(CC) sample/src/sof1.c -o sample/build/sof1_64bits $(CFLAGS_NP)
 clean:
-	rm sample/build/sof1_32bits sample/build/sof1_64bits
+	rm sample/build/sof1_32bits sample/build/sof1_64bits sample/build/no_sof1_64bits
