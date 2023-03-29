@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include <string.h>
 
-
 void  vuln(char str[]) {
 	// stack over flow
 	scanf("%20s", str);
 }
+
 void  vuln2(char str[]) {
 	// stack over flow
 	scanf("%20s", str);

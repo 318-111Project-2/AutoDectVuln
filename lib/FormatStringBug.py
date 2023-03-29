@@ -1,4 +1,8 @@
+from pwn import *
 import angr
+
+def check_printf(act):
+    info(f'I will check printf. in {hex(act.addr)}')
 
 def FormatStringBug(file_path):
     # binary process
@@ -12,16 +16,22 @@ def FormatStringBug(file_path):
     
      # main exlpore
     simgr = proj.factory.simgr(initial_state)
-
     while simgr.active:
         for act in simgr.active:
-
             '''
                 check firest parameter of "printf" 
             '''
-
+            try:
+                # print(act.addr)
+                cfg = act.project.analyses.CFGFast()
+                func = cfg.kb.functions[act.addr]
+                # print(func.name)
+                if func.name == 'printf':
+                    check_printf(act)
+            except:
+                pass
         simgr.step()     
 
 if __name__=='__main__':
-    file_path = 'sample/build/sof1_64bits'
+    file_path = 'sample/build/fmt'
     FormatStringBug(file_path)
