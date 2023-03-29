@@ -34,12 +34,16 @@ def main(argv):
     if argv.module==['all']:
         info('find all()')
         StackOverFlow(file_path)
+        FormatStringBug(file_path)
+
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
         StackOverFlow(file_path)
+    
     elif argv.module==['format_string_bug']:
         info('find FormatStringBug()')
         FormatStringBug(file_path)
+    
     else:
         info('input error')
             
