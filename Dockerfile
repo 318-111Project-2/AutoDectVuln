@@ -1,5 +1,6 @@
 FROM ubuntu:20.04
 MAINTAINER maselab318
+
 LABEL description='AutoVulDetect (on Ubuntu)'
 RUN apt-get update && \
     apt-get install -y python3  \
@@ -10,5 +11,6 @@ RUN apt-get update && \
                 pwntools \
                 pyfiglet \
                 argparse
+                
 WORKDIR /home/
 COPY . /home/
