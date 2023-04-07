@@ -1,5 +1,19 @@
 from pwn import *
 import angr
+def print_result(act):
+
+    # get function name
+    cfg = act.project.analyses.CFGFast()
+    # func = cfg.kb.functions[func_addr]
+    # print("format_string_bug:", func.name)
+
+    print('=============== Process ================')
+    for addr in act.history.bbl_addrs:
+        try:
+            print(cfg.kb.functions[addr].name)
+        except:
+            pass
+    print('========================================')
 
 def check_printf(act):
     info(f'I will check printf. in {hex(act.addr)}')
@@ -25,6 +39,7 @@ def check_printf(act):
         act.memory.store(first_param, temp_str, endness=angr.archinfo.Endness.LE)
         first_param_stack=act.memory.load(first_param, 8, endness=angr.archinfo.Endness.LE)
         print("first_param symbolic")
+        print_result(act)
         return
 
 def FormatStringBug(file_path):
