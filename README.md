@@ -46,3 +46,11 @@ or
     ```sh
     python main.py ./path/to/binary -m module -s ./path/to/save -t limit_time
     ```
+## Check goals
+
+- protection
+    - RELRO: Full RELRO
+    - Stack: No canary found
+    - NX:    NX enabled
+    - PIE:   PIE enabled
+    - FCF:   None
