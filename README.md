@@ -55,7 +55,7 @@ or
     - PIE:   PIE enabled
     - FCF:   None
 
-- Vulberability
+- Vulnerability
     - [x] stack_over_flow
     - [x] format_string_bug
     - [ ] use_after_free
