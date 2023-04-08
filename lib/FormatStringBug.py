@@ -58,7 +58,7 @@ def FormatStringBug(file_path):
     while simgr.active:
         for act in simgr.active:
             '''
-                check firest parameter of "printf" 
+                check first parameter of "printf" 
             '''
             try:
                 # print(act.addr)
@@ -79,4 +79,8 @@ def FormatStringBug(file_path):
 
 if __name__=='__main__':
     file_path = 'sample/build/fmt'
+    FormatStringBug(file_path)
+
+    print('\n')
+    file_path = 'sample/build/no_fmt'
     FormatStringBug(file_path)
