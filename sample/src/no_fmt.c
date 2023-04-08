@@ -6,11 +6,10 @@
 #include <stdbool.h>
 
 bool check_fmt(char *buffer, char *fmt) {
-    if (strlen(fmt) > sizeof(buffer)) {
+    if (strlen(fmt) >= sizeof(buffer)) {
         return false;
     }
     else {
-        strcpy(buffer, fmt);
         return true;
     }
 }
@@ -21,12 +20,13 @@ int main() {
     char fmt[10];
 
     // Use scanf to read the format string from user input
-    scanf("%s", fmt);
+    scanf("%9s", fmt);
 
     // Check the format string
     if (check_fmt(buffer, fmt)) {
         // The format string is safe, so use printf to print the value to the buffer
-        printf(buffer, num);
+        snprintf(buffer, sizeof(buffer), fmt, num);
+        printf("%s", buffer);
     }
 
     return 0;
