@@ -1,11 +1,14 @@
 from pwn import *
 import angr
 def print_result(act):
+    ret_addr = act.callstack.ret_addr
+    block=act.project.factory.block(ret_addr)
+    func_addr=act.globals['func_block_addr'][block.addr]
 
     # get function name
     cfg = act.project.analyses.CFGFast()
-    # func = cfg.kb.functions[func_addr]
-    # print("format_string_bug:", func.name)
+    func = cfg.kb.functions[func_addr]
+    print("format_string_bug:", func.name)
 
     print('=============== Process ================')
     for addr in act.history.bbl_addrs:
@@ -52,6 +55,7 @@ def FormatStringBug(file_path):
         }
     )
     initial_state.globals['origin_str']={}
+    initial_state.globals['func_block_addr']={}
     
      # main exlpore
     simgr = proj.factory.simgr(initial_state)
@@ -64,6 +68,11 @@ def FormatStringBug(file_path):
                 # print(act.addr)
                 cfg = act.project.analyses.CFGFast()
                 func = cfg.kb.functions[act.addr]
+
+                # get function block address
+                block_addrs=list(func.block_addrs)
+                for block_addr in block_addrs:
+                    act.globals['func_block_addr'][block_addr]=act.addr
 
                 # print(func.name)
                 if func.name == 'printf':
