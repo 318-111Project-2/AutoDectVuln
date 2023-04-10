@@ -46,7 +46,7 @@ or
     ```sh
     python main.py ./path/to/binary -m module -s ./path/to/save -t limit_time
     ```
-## Check Goals
+## Goals
 
 - Protection
     - RELRO: Full RELRO
@@ -61,3 +61,7 @@ or
     - [ ] use_after_free
     - [ ] heap_over_flow 
     - [ ] *double_free
+
+- Report File
+    - [ ] Report File function
+    
