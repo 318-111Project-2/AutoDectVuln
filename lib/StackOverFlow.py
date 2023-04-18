@@ -81,7 +81,8 @@ def check_end(act):
         act.memory.store(rbp+8, origin_ret_addr, endness=angr.archinfo.Endness.LE)
         print("ret symbolic")
 
-        # 假如ret symbolic，則rbp也會是symbolic，因此不用再檢查rbp，不讓 print_result() 重複輸出
+        # if et symbolic，then rbp also is symbolic，
+        # don't need to check rbp, and don't let print_result() repeat the output
         act.memory.store(rbp, origin_rbp)
         print("rbp symbolic")
 
