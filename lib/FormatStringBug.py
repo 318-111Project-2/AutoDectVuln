@@ -25,7 +25,7 @@ def check_printf(act):
     Arg=act.project.factory.cc().ARG_REGS[0]
     first_param=act.regs.get(Arg)
     
-    # 復原原本的值
+    # recover original value
     if act.globals['origin_str'].get(first_param) != None:
         origin_str=act.globals['origin_str'][first_param]
         act.memory.store(first_param, origin_str)
@@ -34,10 +34,10 @@ def check_printf(act):
     first_param_stack=act.memory.load(first_param, 8, endness=angr.archinfo.Endness.LE)
     if first_param_stack.symbolic:
         
-        # 將原本的值存起來
+        # store origin value
         act.globals['origin_str'][first_param] = first_param_stack
 
-        # 假如first_param symbolic，則將其值設為0，以免程式crash
+        # if first_param symbolic，then set the value=0 to avoid the program crash
         temp_str='0x'+str(0)*64
         act.memory.store(first_param, temp_str, endness=angr.archinfo.Endness.LE)
         first_param_stack=act.memory.load(first_param, 8, endness=angr.archinfo.Endness.LE)
