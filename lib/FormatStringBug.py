@@ -1,6 +1,6 @@
 from pwn import *
 import angr
-def print_result(act):
+def print_result(act: angr.sim_state.SimState) -> None:
     ret_addr = act.callstack.ret_addr
     block=act.project.factory.block(ret_addr)
     func_addr=act.globals['func_block_addr'][block.addr]
@@ -18,7 +18,7 @@ def print_result(act):
             pass
     print('========================================')
 
-def check_printf(act):
+def check_printf(act: angr.sim_state.SimState) -> None:
     info(f'I will check printf. in {hex(act.addr)}')
     
     # get first parameter address of printf
@@ -45,7 +45,7 @@ def check_printf(act):
         print_result(act)
         return
 
-def FormatStringBug(file_path):
+def FormatStringBug(file_path: str) -> None:
     # binary process
     proj = angr.Project(file_path, auto_load_libs=False)
     initial_state = proj.factory.entry_state(
@@ -91,5 +91,6 @@ if __name__=='__main__':
     FormatStringBug(file_path)
 
     print('\n')
+    
     file_path = 'sample/build/no_fmt'
     FormatStringBug(file_path)

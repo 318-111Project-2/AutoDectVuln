@@ -1,7 +1,7 @@
 from pwn import *
 import angr
 
-def print_result(act):
+def print_result(act: angr.sim_state.SimState) -> None:
     ret_addr = act.callstack.ret_addr
     func_addr = act.globals['func_addr_list'][ret_addr]
 
@@ -22,7 +22,7 @@ def print_result(act):
     print('========================================')
 
 # check the head of basic block
-def check_head(act):
+def check_head(act: angr.sim_state.SimState) -> None:
     block = act.project.factory.block(act.addr)
     insns = block.capstone.insns
 
@@ -53,7 +53,7 @@ def check_head(act):
     # print("Found head")
 
 # check the end of basic block
-def check_end(act):
+def check_end(act: angr.sim_state.SimState) -> None:
     block = act.project.factory.block(act.addr)
     insns = block.capstone.insns
 
@@ -96,7 +96,7 @@ def check_end(act):
         print_result(act)
 
         
-def StackOverFlow(file_path):
+def StackOverFlow(file_path: str) -> None:
     # binary process
     proj = angr.Project(file_path, auto_load_libs=False)
     initial_state = proj.factory.entry_state(

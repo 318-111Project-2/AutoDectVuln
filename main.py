@@ -10,7 +10,7 @@ from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
 
 # get argv
-def get_argv():
+def get_argv() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('proj', type=str, help="binary path")
     parser.add_argument('-s', '--save', type=str, default='report/report.txt', help="report file path")
@@ -19,7 +19,7 @@ def get_argv():
     return parser.parse_args()
 
 # main function
-def main(argv):
+def main(argv: argparse.Namespace) -> None:
     # load binary file
     proj = angr.Project(argv.proj)
     
