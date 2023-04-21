@@ -21,4 +21,4 @@ fmt:
 	$(CC) sample/src/fmt.c -o sample/build/fmt $(CFLAPS_NP)
 	$(CC) sample/src/no_fmt.c -o sample/build/no_fmt $(CFLAGS_NP)
 clean:
-	rm sample/build/sof sample/build/no_sof sample/build/fmt sample/build/no_fmt
+	rm sample/build/*
