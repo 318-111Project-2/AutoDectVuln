@@ -45,9 +45,8 @@ def check_printf(act: angr.sim_state.SimState) -> None:
         print_result(act)
         return
 
-def FormatStringBug(file_path: str) -> None:
+def FormatStringBug(proj: angr.project.Project) -> None:
     # binary process
-    proj = angr.Project(file_path, auto_load_libs=False)
     initial_state = proj.factory.entry_state(
         add_options = { 
             angr.options.SYMBOL_FILL_UNCONSTRAINED_MEMORY,
@@ -87,10 +86,14 @@ def FormatStringBug(file_path: str) -> None:
         simgr.step()     
 
 if __name__=='__main__':
+    info(f'Format String Bug case:')  
     file_path = 'sample/build/fmt'
-    FormatStringBug(file_path)
+    proj = angr.Project(file_path, auto_load_libs=False)
+    FormatStringBug(proj)
 
     print('\n')
-    
+
+    info(f'No Format String Bug case:')
     file_path = 'sample/build/no_fmt'
-    FormatStringBug(file_path)
+    proj = angr.Project(file_path, auto_load_libs=False)
+    FormatStringBug(proj)

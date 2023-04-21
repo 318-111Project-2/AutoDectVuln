@@ -18,43 +18,53 @@ def get_argv() -> argparse.Namespace:
     parser.add_argument('-t', '--limit_time', type=int, default=60, help="limit time")
     return parser.parse_args()
 
+
+def load(file_path: str) -> angr.project.Project:
+    
+    # load binary file
+    proj = angr.Project(argv.proj, auto_load_libs=False)
+    return proj
+
 # main function
 def main(argv: argparse.Namespace) -> None:
-    # load binary file
-    proj = angr.Project(argv.proj)
-    
-    # get file path
-    file_path = os.path.abspath(argv.proj)
-    
+
+    # binary load 
+    proj = load(argv.proj)
+
     # print checksec
-    elf = ELF(file_path, checksec=False)
+    elf = ELF(argv.proj, checksec=False)
     print(elf.checksec())
 
-    # modules
-    if argv.module==['all']:
-        info('find all()')
-        StackOverFlow(file_path)
-        FormatStringBug(file_path)
-
-    elif argv.module==['stack_over_flow']:
-        info('find StackOverFlow()')
-        StackOverFlow(file_path)
     
-    elif argv.module==['format_string_bug']:
-        info('find FormatStringBug()')
-        FormatStringBug(file_path)
-    
-    else:
-        info('input error')
-            
+    # ==================================== write report =====================================
     # create report file path
     pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True)
-
-    # write report
+    
     rep_file = open(argv.save, 'w+')
     rep_file.write(f'file name: {argv.proj}\n')
     rep_file.write(f'arch: {proj.arch}\n')
     rep_file.write(f'start time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}')
+    # =======================================================================================
+
+
+    # modules
+    if argv.module==['all']:
+        info('find all()')
+        StackOverFlow(proj)
+        FormatStringBug(proj)
+
+    elif argv.module==['stack_over_flow']:
+        info('find StackOverFlow()')
+        StackOverFlow(proj)
+    
+    elif argv.module==['format_string_bug']:
+        info('find FormatStringBug()')
+        FormatStringBug(proj)
+    
+    else:
+        info('input error')
+            
+    
 
 if __name__=='__main__':
     # magic

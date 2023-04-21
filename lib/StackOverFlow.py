@@ -96,9 +96,8 @@ def check_end(act: angr.sim_state.SimState) -> None:
         print_result(act)
 
         
-def StackOverFlow(file_path: str) -> None:
+def StackOverFlow(proj: angr.project.Project) -> None:
     # binary process
-    proj = angr.Project(file_path, auto_load_libs=False)
     initial_state = proj.factory.entry_state(
         add_options = { 
             angr.options.SYMBOL_FILL_UNCONSTRAINED_MEMORY,
@@ -123,9 +122,12 @@ def StackOverFlow(file_path: str) -> None:
 if __name__=='__main__':
     info(f'Stack Over Flow case:')    
     file_path = 'sample/build/sof'
-    StackOverFlow(file_path)
+    proj = angr.Project(file_path, auto_load_libs=False)
+    StackOverFlow(proj)
+    
     print('\n')
 
     info(f'no Stack Over Flow case:')    
     file_path = 'sample/build/no_sof'
-    StackOverFlow(file_path)
+    proj = angr.Project(file_path, auto_load_libs=False)
+    StackOverFlow(proj)
