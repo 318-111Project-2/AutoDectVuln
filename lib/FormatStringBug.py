@@ -31,6 +31,8 @@ def print_result(act: angr.sim_state.SimState) -> None:
         except:
             pass
     do_write(f'    ===============\n\n')
+
+    VULN_DICT["FormatStringBug"] += 1
    
 def check_printf(act: angr.sim_state.SimState) -> None:
     info(f'I will check printf. in {hex(act.addr)}')

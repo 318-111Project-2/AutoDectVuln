@@ -1,12 +1,17 @@
 import os
 import pathlib
 
+REP_FILE = None
+VULN_DICT = {
+    'StackOverFlow': 0,
+    'FormatStringBug': 0
+}
+
 def create_report_file(argv) :
+    global REP_FILE
     pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True)
-    global rep_file
-    rep_file = open(argv.save, 'w+')
-    return rep_file 
+    REP_FILE = open(argv.save, 'w+')
 
 def do_write(string: str) -> None:
-    rep_file.write(string)
+    REP_FILE.write(string)
 

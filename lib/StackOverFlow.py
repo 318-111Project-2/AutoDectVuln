@@ -33,6 +33,8 @@ def print_result(act: angr.sim_state.SimState) -> None:
         except:
             pass
     do_write(f'    ===============\n\n')
+
+    VULN_DICT["StackOverFlow"] += 1
     
     
 # check the head of basic block

@@ -8,7 +8,7 @@ import pathlib
 
 from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
-from lib.Tool import * 
+from lib.Tool import *
 
 # get argv
 def get_argv() -> argparse.Namespace:
@@ -38,7 +38,7 @@ def main(argv: argparse.Namespace) -> None:
     
     # ==================================== write report =====================================
     #create report file path
-    rep_file = create_report_file(argv)
+    create_report_file(argv)
     do_write(f'File path: {argv.proj}\n')
     do_write(f'Architecture: {proj.arch}\n')
     do_write(f'Start Time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
@@ -51,14 +51,20 @@ def main(argv: argparse.Namespace) -> None:
         info('find all()')
         StackOverFlow(proj)
         FormatStringBug(proj)
+        do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
+        do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
 
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
         StackOverFlow(proj)
+        do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
+
     
     elif argv.module==['format_string_bug']:
         info('find FormatStringBug()')
         FormatStringBug(proj)
+        do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
+
     
     else:
         info('input error')
