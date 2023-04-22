@@ -38,18 +38,8 @@ def main(argv: argparse.Namespace) -> None:
     
     # ==================================== write report =====================================
     #create report file path
-    '''debug
-    pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True)
-    
-    rep_file = open(argv.save, 'w+')
-    
-    rep_file.write(f'file name: {argv.proj}\n')
-    rep_file.write(f'arch: {proj.arch}\n')
-    rep_file.write(f'start time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}')
-    '''
-
     rep_file = create_report_file(argv)
-    do_write(f'Report File Name: {argv.proj}\n')
+    do_write(f'File path: {argv.proj}\n')
     do_write(f'Architecture: {proj.arch}\n')
     do_write(f'Start Time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
     do_write(f'=========== Vulnerability Detection =========:\n\n')
