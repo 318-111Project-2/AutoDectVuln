@@ -25,14 +25,14 @@ def print_result(act: angr.sim_state.SimState) -> None:
     print('========================================')
     '''
     # do write to report file
-    do_write(f'[*]StackOverFlow is found on \"{func.name}\"\n')
-    do_write(f'================== Process =================\n')
+    do_write(f'[*]StackOverFlow found in function: \"{func.name}\"\n')
+    do_write(f'    === Process ===\n')
     for addr in act.history.bbl_addrs:
         try:
-            do_write(f'{cfg.kb.functions[addr].name}\n')
+            do_write(f'    {cfg.kb.functions[addr].name}\n')
         except:
             pass
-    do_write('=============================================\n\n')
+    do_write(f'    ===============\n\n')
     
     
 # check the head of basic block

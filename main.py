@@ -49,10 +49,10 @@ def main(argv: argparse.Namespace) -> None:
     '''
 
     rep_file = create_report_file(argv)
-    do_write(f'file name: {argv.proj}\n')
-    do_write(f'arch: {proj.arch}\n')
-    do_write(f'start time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
-    do_write(f'vulnerability detection:\n\n')
+    do_write(f'Report File Name: {argv.proj}\n')
+    do_write(f'Architecture: {proj.arch}\n')
+    do_write(f'Start Time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
+    do_write(f'=========== Vulnerability Detection =========:\n\n')
     # =======================================================================================
 
 

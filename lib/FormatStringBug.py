@@ -23,14 +23,14 @@ def print_result(act: angr.sim_state.SimState) -> None:
     '''
 
     # do write to report file
-    do_write(f'[*]format_string_bug is found on : {func.name}\n')
-    do_write(f'================== Process =================\n')
+    do_write(f'[*]format_string_bug found in function: {func.name}\n')
+    do_write(f'    === Process ===\n')
     for addr in act.history.bbl_addrs:
         try:
-            do_write(f'{cfg.kb.functions[addr].name}\n')
+            do_write(f'    {cfg.kb.functions[addr].name}\n')
         except:
             pass
-    do_write(f'=============================================\n\n')
+    do_write(f'    ===============\n\n')
    
 def check_printf(act: angr.sim_state.SimState) -> None:
     info(f'I will check printf. in {hex(act.addr)}')
