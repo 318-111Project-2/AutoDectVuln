@@ -93,12 +93,12 @@ def check_end(act: angr.sim_state.SimState) -> None:
     if(ret_stack.symbolic):
         origin_ret_addr = act.solver.BVV(act.callstack.ret_addr, 64)
         act.memory.store(rbp+8, origin_ret_addr, endness=angr.archinfo.Endness.LE)
-        print("ret symbolic")
+        #print("ret symbolic")
 
         # if et symbolic，then rbp also is symbolic，
         # don't need to check rbp, and don't let print_result() repeat the output
         act.memory.store(rbp, origin_rbp)
-        print("rbp symbolic")
+        #print("rbp symbolic")
 
         print_result(act)
         return
