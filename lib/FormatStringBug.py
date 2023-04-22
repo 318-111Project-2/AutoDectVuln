@@ -55,7 +55,7 @@ def check_printf(act: angr.sim_state.SimState) -> None:
         temp_str='0x'+str(0)*64
         act.memory.store(first_param, temp_str, endness=angr.archinfo.Endness.LE)
         first_param_stack=act.memory.load(first_param, 8, endness=angr.archinfo.Endness.LE)
-        print("first_param symbolic")
+        #print("first_param symbolic")
         print_result(act)
         return
 
