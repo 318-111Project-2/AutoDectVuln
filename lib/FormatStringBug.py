@@ -1,5 +1,7 @@
 from pwn import *
 import angr
+from lib.Tool import *
+
 def print_result(act: angr.sim_state.SimState) -> None:
     ret_addr = act.callstack.ret_addr
     block=act.project.factory.block(ret_addr)
@@ -8,8 +10,9 @@ def print_result(act: angr.sim_state.SimState) -> None:
     # get function name
     cfg = act.project.analyses.CFGFast()
     func = cfg.kb.functions[func_addr]
+    
+    '''debug
     print("format_string_bug:", func.name)
-
     print('=============== Process ================')
     for addr in act.history.bbl_addrs:
         try:
@@ -17,7 +20,18 @@ def print_result(act: angr.sim_state.SimState) -> None:
         except:
             pass
     print('========================================')
+    '''
 
+    # do write to report file
+    do_write(f'[*]format_string_bug is found on : {func.name}\n')
+    do_write(f'================== Process =================\n')
+    for addr in act.history.bbl_addrs:
+        try:
+            do_write(f'{cfg.kb.functions[addr].name}\n')
+        except:
+            pass
+    do_write(f'=============================================\n\n')
+   
 def check_printf(act: angr.sim_state.SimState) -> None:
     info(f'I will check printf. in {hex(act.addr)}')
     

@@ -1,5 +1,6 @@
 from pwn import *
 import angr
+from lib.Tool import *
 
 def print_result(act: angr.sim_state.SimState) -> None:
     ret_addr = act.callstack.ret_addr
@@ -11,6 +12,8 @@ def print_result(act: angr.sim_state.SimState) -> None:
     # get function name
     cfg = act.project.analyses.CFGFast()
     func = cfg.kb.functions[func_addr]
+    
+    '''debug
     print("stack_over_flow:", func.name)
 
     print('=============== Process ================')
@@ -20,7 +23,18 @@ def print_result(act: angr.sim_state.SimState) -> None:
         except:
             pass
     print('========================================')
-
+    '''
+    # do write to report file
+    do_write(f'[*]StackOverFlow is found on \"{func.name}\"\n')
+    do_write(f'================== Process =================\n')
+    for addr in act.history.bbl_addrs:
+        try:
+            do_write(f'{cfg.kb.functions[addr].name}\n')
+        except:
+            pass
+    do_write('=============================================\n\n')
+    
+    
 # check the head of basic block
 def check_head(act: angr.sim_state.SimState) -> None:
     block = act.project.factory.block(act.addr)
