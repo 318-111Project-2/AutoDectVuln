@@ -40,9 +40,9 @@ def main(argv: argparse.Namespace) -> None:
     #create report file path
     create_report_file(argv)
     do_write(f'File path: {argv.proj}\n')
-    do_write(f'Architecture: {proj.arch}\n')
+    do_write(f'Architecture: {str(proj.arch)[1:-1]}\n')
     do_write(f'Start Time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
-    do_write(f'=========== Vulnerability Detection =========:\n\n')
+    do_write(f'=========== Vulnerability Detection =========\n\n')
     # =======================================================================================
 
 
