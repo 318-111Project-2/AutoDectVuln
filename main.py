@@ -8,6 +8,7 @@ import pathlib
 
 from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
+from lib.Tool import * 
 
 # get argv
 def get_argv() -> argparse.Namespace:
@@ -20,7 +21,6 @@ def get_argv() -> argparse.Namespace:
 
 
 def load(file_path: str) -> angr.project.Project:
-    
     # load binary file
     proj = angr.Project(argv.proj, auto_load_libs=False)
     return proj
@@ -37,13 +37,22 @@ def main(argv: argparse.Namespace) -> None:
 
     
     # ==================================== write report =====================================
-    # create report file path
+    #create report file path
+    '''debug
     pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True)
     
     rep_file = open(argv.save, 'w+')
+    
     rep_file.write(f'file name: {argv.proj}\n')
     rep_file.write(f'arch: {proj.arch}\n')
     rep_file.write(f'start time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}')
+    '''
+
+    rep_file = create_report_file(argv)
+    do_write(f'file name: {argv.proj}\n')
+    do_write(f'arch: {proj.arch}\n')
+    do_write(f'start time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
+    do_write(f'vulnerability detection:\n\n')
     # =======================================================================================
 
 
