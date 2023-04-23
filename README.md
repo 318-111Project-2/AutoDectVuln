@@ -57,6 +57,9 @@
 ```sh
 # need to install flask and flask_session
 cd lib/web
+cp config.py.template config.py
+# edit config.py
+# change SECRET_KEY value
 python3 app.py
 ```
 
