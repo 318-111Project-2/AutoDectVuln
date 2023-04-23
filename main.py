@@ -22,12 +22,22 @@ def get_argv() -> argparse.Namespace:
 
 def load(file_path: str) -> angr.project.Project:
     # load binary file
-    proj = angr.Project(argv.proj, auto_load_libs=False)
+    proj = angr.Project(file_path, auto_load_libs=False)
     return proj
 
-# main function
-def main(argv: argparse.Namespace) -> None:
+class Web_Control:
+    def __init__(self, proj, save, module, limit_time):
+        self.proj = proj
+        self.save = save
+        self.module = module
+        self.limit_time = limit_time
 
+# main function
+def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
+
+    if WEB_Data:
+        argv=Web_Control(WEB_Data['proj'], WEB_Data['save'], WEB_Data['module'], WEB_Data['limit_time'])
+        
     # binary load 
     proj = load(argv.proj)
 
@@ -68,6 +78,8 @@ def main(argv: argparse.Namespace) -> None:
     
     else:
         info('input error')
+
+    close_report_file()
             
     
 

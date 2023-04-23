@@ -1,7 +1,6 @@
 import os
 import pathlib
 
-REP_FILE = None
 VULN_DICT = {
     'StackOverFlow': 0,
     'FormatStringBug': 0
@@ -15,3 +14,5 @@ def create_report_file(argv) :
 def do_write(string: str) -> None:
     REP_FILE.write(string)
 
+def close_report_file():
+    REP_FILE.close()

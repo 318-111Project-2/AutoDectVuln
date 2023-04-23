@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid;
+        }
+    </style>
+    <title>home</title>
+</head>
+
+<body>
+    <h1>Upload</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+        <input type="file" name="file" multiple>
+        <input type="button" value="Upload" id="uploadBtn">
+    </form>
+    <div id="control" style="display: none;">
+        <table id="file_list">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>module</th>
+                    <th>status</th>
+                    <th>reports</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <button id="analyze">analyze</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            files = null;
+            $('#uploadBtn').click(function (e) {
+                e.preventDefault();
+                var form_data = new FormData($('#uploadForm')[0]);
+                $.ajax({
+                    type: 'POST',
+                    url: '/upload',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        console.log(data.msg);
+                        table_html = '';
+                        files = data.binary_files;
+                        for (var i = 0; i < files.length; i++) {
+                            table_html += '<tr><td>' + files[i] + '</td>';
+                            table_html += `<td>
+                                <input type="radio" name="module_proc_${i + 1}" value="all" checked>all</input>
+                                <input type="radio" name="module_proc_${i + 1}" value="stack_over_flow">stack_over_flow</input>
+                                <input type="radio" name="module_proc_${i + 1}" value="format_string_bug">format_string_bug</input>
+                                </td>`;
+                            table_html += `<td id="proc_${i + 1}">waiting</td>`;
+                            table_html += `<td id="report_${i + 1}">waiting</td>`;
+                        }
+                        $('#control').show();
+                        $('#file_list').children('tbody').prepend(table_html);
+                    },
+                });
+            });
+
+            var update_progress = () => {
+                var check_progress = setInterval(() => {
+                    $.ajax({
+                        type: 'GET',
+                        url: '/analyze_progress',
+                        success: function (data) {
+                            data.progress.forEach((element, index) => {
+                                //console.log(index + 1, element)
+                                if (element == 'finished') {
+                                    $('#report_' + (index + 1)).html(`<a href='/report/${index}' target='_blank'>download</a>`);
+                                }
+                                $('#proc_' + (index + 1)).html(element);
+                            });
+                            if (!data.progress.includes('running')) {
+                                clearInterval(check_progress);
+                            }
+                        },
+                    });
+                }, 250);
+            }
+
+            $('#analyze').click(function (e) {
+                e.preventDefault();
+                $('#analyze').prop('disabled', true);
+                data = {};
+                for (var i = 0; i < files.length; i++) {
+                    input = $(`input[name=module_proc_${i + 1}]:checked`)
+                    console.log(input)
+                    data[files[i]] = input.val();
+                    input.parent().html(data[files[i]])
+                }
+                console.log(data);
+                $.ajax({
+                    type: 'POST',
+                    url: '/analyze',
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    cache: false,
+                    processData: false,
+                    success: function (data) {
+                        update_progress();
+                    },
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
