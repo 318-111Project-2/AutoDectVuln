@@ -3,75 +3,93 @@
 ## Getting Started
 
 - Ubuntu 20.04
-    ```
-    ./install.sh
-    ```
+
+  ```
+  ./install.sh
+  ```
 
 - Dockerfile
-    ```sh
-    # build
-    sudo docker build -t <tag name> .
 
-    # run (option) 
-    sudo docker run <tag name>
+  ````sh # build
+  sudo docker build -t <tag name> .
 
-    # run with interactive interface
-    sudo docker run -it --rm <tag name> /bin/bash
+      # run (option)
+      sudo docker run <tag name>
 
-    # install
-    ./install.sh
-    ```
-or
+      # run with interactive interface
+      sudo docker run -it --rm <tag name> /bin/bash
+
+      # install
+      ./install.sh
+      ```
+
+  or
+
+  ````
 
 - docker-compose.yml
-    ```sh
-    # up
-    docker-compose up 
 
-    # run with interactive interface
-    sudo docker run -it autodetectvuln /bin/bash
-    ```
+  ```sh
+  # up
+  docker-compose up
+
+  # run with interactive interface
+  sudo docker run -it autodetectvuln /bin/bash
+  ```
 
 ## Sample Testing
 
 - make sample
-    ```sh
-    make
-    ```
+  ```sh
+  make
+  ```
 - clean sample
-    ```sh
-    make clean
-    ```
-- Test sample file 
-    ```sh
-    python main.py ./path/to/binary -m module -s ./path/to/save -t limit_time
-    ```
+  ```sh
+  make clean
+  ```
+- Test sample file
+  ```sh
+  python main.py ./path/to/binary -m module -s ./path/to/save -t limit_time
+  ```
+
+## Web
+
+```sh
+# need to install flask and flask_session
+cd lib/web
+python3 app.py
+```
+
 ## Goals
 
 - Binary Arch
-    - arch: amd64/x86-64
+
+  - arch: amd64/x86-64
 
 - Protection
-    - RELRO: Full RELRO
-    - Stack: No canary found
-    - NX:    NX enabled
-    - PIE:   PIE enabled
-    - FCF:   None
+
+  - RELRO: Full RELRO
+  - Stack: No canary found
+  - NX: NX enabled
+  - PIE: PIE enabled
+  - FCF: None
 
 - Vulnerability
-    - [x] stack_over_flow
-    - [x] format_string_bug
-    - [ ] use_after_free
-    - [ ] heap_over_flow 
-    - [ ] *double_free
+
+  - [x] stack_over_flow
+  - [x] format_string_bug
+  - [ ] use_after_free
+  - [ ] heap_over_flow
+  - [ ] \*double_free
 
 - Testing
-    - [ ] Organising test sample
-    - [ ] Testing
+
+  - [ ] Organising test sample
+  - [ ] Testing
 
 - Report File
-    - [ ] Report File function
+
+  - [ ] Report File function
 
 - Demo
-    - [ ] Demo
-    
+  - [ ] Demo
