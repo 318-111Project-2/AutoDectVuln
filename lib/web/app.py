@@ -10,10 +10,7 @@ sys.path.append("../..")
 from main import main as main_analyze
 
 app = Flask(__name__)
-SESSION_TYPE = 'filesystem'
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
-app.secret_key = 'sEE92pV0uau9wooLxqU5jNaPZ7z395bdu959SWLyzIs='
-app.config.from_object(__name__)
+app.config.from_pyfile('config.py')
 Session(app)
 
 
@@ -141,4 +138,4 @@ def report_file(name):
     print(report_path)
     return send_file(report_path, as_attachment=True)
 
-app.run(debug=True, use_reloader=False)
+app.run(use_reloader=False)

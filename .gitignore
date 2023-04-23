@@ -6,3 +6,4 @@ report*.txt
 **/uploads/*
 *.swp
 **/flask_session/*
+**/config.py
