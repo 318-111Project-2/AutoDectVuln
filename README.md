@@ -48,6 +48,9 @@ or
     ```
 ## Goals
 
+- Binary Arch
+    - arch: amd64/x86-64
+
 - Protection
     - RELRO: Full RELRO
     - Stack: No canary found
