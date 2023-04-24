@@ -22,10 +22,7 @@
   # install
   ./install.sh
   ```
-
   or
-
-  ```
 
 - docker-compose.yml
 
