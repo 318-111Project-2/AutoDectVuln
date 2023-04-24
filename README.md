@@ -10,22 +10,22 @@
 
 - Dockerfile
 
-  ````sh # build
+  ```sh # build
   sudo docker build -t <tag name> .
 
-      # run (option)
-      sudo docker run <tag name>
+  # run (option)
+  sudo docker run <tag name>
 
-      # run with interactive interface
-      sudo docker run -it --rm <tag name> /bin/bash
+  # run with interactive interface
+  sudo docker run -it --rm <tag name> /bin/bash
 
-      # install
-      ./install.sh
-      ```
+  # install
+  ./install.sh
+  ```
 
   or
 
-  ````
+  ```
 
 - docker-compose.yml
 
@@ -92,7 +92,7 @@ python3 app.py
 
 - Report File
 
-  - [ ] Report File function
+  - [x] Report File function
 
 - Demo
   - [ ] Demo
