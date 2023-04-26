@@ -22,6 +22,7 @@
   # install
   ./install.sh
   ```
+
   or
 
 - docker-compose.yml
@@ -54,10 +55,10 @@
 ```sh
 # need to install flask and flask_session
 cd lib/web
-cp config.py.template config.py
-# edit config.py
+cp app/configs/config.py.template app/configs/config.py
+# edit app/configs/config.py
 # change SECRET_KEY value
-python3 app.py
+python3 web.py
 ```
 
 ## Goals

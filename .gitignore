@@ -7,3 +7,4 @@ report*.txt
 *.swp
 **/flask_session/*
 **/config.py
+**/*.log
