@@ -10,7 +10,12 @@ from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
 from lib.Tool import *
 
-# get argv
+'''
+    get argv
+
+    usage: main.py [-h] [-s SAVE] [-m MODULE [MODULE ...]] [-t LIMIT_TIME] proj
+    main.py: error: the following arguments are required: proj
+'''
 def get_argv() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('proj', type=str, help="binary path")
@@ -20,11 +25,18 @@ def get_argv() -> argparse.Namespace:
     return parser.parse_args()
 
 
+'''
+    load the binary file
+'''
 def load(file_path: str) -> angr.project.Project:
-    # load binary file
-    proj = angr.Project(file_path, auto_load_libs=False)
+    #proj = angr.Project(file_path, auto_load_libs=False)
+    proj = angr.Project(file_path, auto_load_lib=True)
     return proj
 
+
+'''
+    Web Control
+'''
 class Web_Control:
     def __init__(self, proj, save, module, limit_time):
         self.proj = proj
@@ -35,6 +47,7 @@ class Web_Control:
 # main function
 def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
 
+    # ================================== initialize =========================================
     if WEB_Data:
         argv=Web_Control(WEB_Data['proj'], WEB_Data['save'], WEB_Data['module'], WEB_Data['limit_time'])
         
@@ -44,6 +57,7 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
     # print checksec
     elf = ELF(argv.proj, checksec=False)
     print(elf.checksec())
+    # =======================================================================================
 
     
     # ==================================== write report =====================================
@@ -56,7 +70,7 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
     # =======================================================================================
 
 
-    # modules
+    # ====================================== modules ========================================
     if argv.module==['all']:
         info('find all()')
         StackOverFlow(proj)
@@ -79,8 +93,11 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
     else:
         info('input error')
 
+    # ======================================================================================            
+
+    # ==================================== finish ==========================================
     close_report_file()
-            
+    # ======================================================================================            
     
 
 if __name__=='__main__':
