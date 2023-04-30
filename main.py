@@ -8,6 +8,7 @@ import pathlib
 
 from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
+from lib.HeapOverFlow import HeapOverFlow
 from lib.Tool import *
 
 '''
@@ -29,8 +30,8 @@ def get_argv() -> argparse.Namespace:
     load the binary file
 '''
 def load(file_path: str) -> angr.project.Project:
-    #proj = angr.Project(file_path, auto_load_libs=False)
-    proj = angr.Project(file_path, auto_load_lib=True)
+    proj = angr.Project(file_path, auto_load_libs=False)
+    # proj = angr.Project(file_path, auto_load_lib=True)
     return proj
 
 
@@ -88,6 +89,11 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         info('find FormatStringBug()')
         FormatStringBug(proj)
         do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
+
+    elif argv.module==['heap_over_flow']:
+        info('find HeapOverFlow()')
+        HeapOverFlow(proj)
+        do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
 
     
     else:

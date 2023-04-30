@@ -1,5 +1,5 @@
-from pwn import *
 import angr
+from pwn import *
 from lib.Tool import *
 
 def print_result(act: angr.sim_state.SimState) -> None:
@@ -72,7 +72,7 @@ def FormatStringBug(proj: angr.project.Project) -> None:
     initial_state.globals['origin_str']={}
     initial_state.globals['func_block_addr']={}
     
-     # main exlpore
+    # main exlpore
     simgr = proj.factory.simgr(initial_state)
     while simgr.active:
         for act in simgr.active:
