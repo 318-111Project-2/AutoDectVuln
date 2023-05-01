@@ -3,7 +3,16 @@ from pwn import *
 from lib.Tool import *
 
 def print_result(act: angr.sim_state.SimState) -> None:
-    module_name = "heap_over_flow" if act.globals['module'] == 'HeapOverFlow' else "use_after_free"
+    # get module name and add vuln count
+    module_name = "heap_over_flow"
+    if act.globals['module'] == 'HeapOverFlow':
+        VULN_DICT["HeapOverFlow"] += 1
+    elif act.globals['module'] == 'UseAfterFree':
+        VULN_DICT["UseAfterFree"] += 1
+        module_name = "use_after_free"
+    elif act.globals['module'] == 'DoubleFree':
+        VULN_DICT["DoubleFree"] += 1
+        module_name = "double_free"
 
     ret_addr = act.callstack.ret_addr
     block=act.project.factory.block(ret_addr)
@@ -22,11 +31,7 @@ def print_result(act: angr.sim_state.SimState) -> None:
         except:
             pass
     do_write(f'    ===============\n\n')
-    
-    if act.globals['module'] == 'HeapOverFlow':
-        VULN_DICT["HeapOverFlow"] += 1
-    elif act.globals['module'] == 'UseAfterFree':
-        VULN_DICT["UseAfterFree"] += 1
+
 
 def check_malloc(act):
     info(f'I will check malloc. in {hex(act.addr)}')
@@ -46,6 +51,9 @@ def check_free(act):
     # check if first_param in malloc_addr, if not, add it
     if first_param not in act.globals['free_malloc_addr']:
         act.globals['free_malloc_addr'].append(first_param)
+    elif act.globals['module'] == 'DoubleFree':
+        print("find double free")
+        print_result(act)
 
 def check_mem_write(state):
     if state.inspect.mem_write_address == None:
@@ -105,7 +113,7 @@ def check_mem_read(state):
             print('read', 'from', state.inspect.mem_read_address)
             print_result(state)
 
-def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False):
+def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=False):
     # binary process
     initial_state = proj.factory.entry_state(
         add_options = { 
@@ -116,7 +124,12 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False):
 
     cfg = proj.analyses.CFGFast()
 
-    initial_state.globals['module'] = 'HeapOverFlow' if isHeapOverFlow else 'UseAfterFree'
+    # set module name
+    initial_state.globals['module'] = 'HeapOverFlow'
+    if isUseAfterFree:
+        initial_state.globals['module'] = 'UseAfterFree'
+    elif isDoubleFree:
+        initial_state.globals['module'] = 'DoubleFree'
 
     # if you want to use cfg in other function, you need to add this line
     initial_state.globals['cfg']=cfg
@@ -127,9 +140,10 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False):
     initial_state.globals['free_malloc_addr']=[]
     initial_state.globals['malloc_size']=0
 
-    # add breakpoint
-    initial_state.inspect.b('mem_write', when=angr.BP_AFTER, action=check_mem_write)
-    initial_state.inspect.b('mem_read', when=angr.BP_AFTER, action=check_mem_read)
+    # 使用double free的話，就不需要檢查mem_write和mem_read
+    if not isDoubleFree:
+        initial_state.inspect.b('mem_write', when=angr.BP_AFTER, action=check_mem_write)
+        initial_state.inspect.b('mem_read', when=angr.BP_AFTER, action=check_mem_read)
 
     # main exlpore
     simgr = proj.factory.simgr(initial_state)
@@ -183,8 +197,12 @@ def HeapOverFlow(proj):
 def UseAfterFree(proj):
     HeapVuln(proj, isUseAfterFree=True)
 
+def DoubleFree(proj):
+    HeapVuln(proj, isDoubleFree=True)
+    pass
+
 if __name__=='__main__':
-    choose = input('HeapVuln: \n\t1. HeapOverFlow 2. UseAfterFree\n')
+    choose = input('HeapVuln: \n\t1. HeapOverFlow 2. UseAfterFree 3. DoubleFree\n')
     if choose == '1':
         info('Heap Over Flow case:')
         file_path = 'sample/build/hof'
@@ -192,6 +210,11 @@ if __name__=='__main__':
         HeapOverFlow(proj)
     elif choose == '2':
         info('Use After Free case:')
+        file_path = 'sample/build/uaf'
+        proj = angr.Project(file_path, auto_load_libs=False)
+        UseAfterFree(proj)
+    elif choose == '3':
+        info('Double Free case:')
         file_path = 'sample/build/uaf'
         proj = angr.Project(file_path, auto_load_libs=False)
         UseAfterFree(proj)

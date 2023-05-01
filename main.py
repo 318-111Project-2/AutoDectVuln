@@ -10,6 +10,7 @@ from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
 from lib.HeapVuln import HeapOverFlow
 from lib.HeapVuln import UseAfterFree
+from lib.HeapVuln import DoubleFree
 from lib.Tool import *
 
 '''
@@ -79,10 +80,12 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         FormatStringBug(proj)
         HeapOverFlow(proj)
         UseAfterFree(proj)
+        DoubleFree(proj)
         do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
         do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
         do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
         do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
+        do_write(f'[*]DoubleFree: {VULN_DICT["DoubleFree"]}\n')
     
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
@@ -105,6 +108,10 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         UseAfterFree(proj)
         do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
 
+    elif argv.module==['double_free']:
+        info('find DoubleFree()')
+        DoubleFree(proj)
+        do_write(f'[*]DoubleFree: {VULN_DICT["DoubleFree"]}\n')
     
     else:
         info('input error')

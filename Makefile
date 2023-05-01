@@ -11,6 +11,7 @@ make:
 	$(CC) sample/src/hof.c -o sample/build/hof $(CFLAGS_NP)
 	$(CC) sample/src/no_hof.c -o sample/build/no_hof $(CFLAGS_NP)
 	$(CC) sample/src/uaf.c -o sample/build/uaf $(CFLAGS_NP)
+	$(CC) sample/src/df.c -o sample/build/df $(CFLAGS_NP)
 
 sof:
 	[ -d sample/build ] || mkdir -p sample/build
@@ -34,6 +35,11 @@ uaf:
 	[ -d sample/build ] || mkdir -p sample/build
 
 	$(CC) sample/src/uaf.c -o sample/build/uaf $(CFLAGS_NP)
+
+df:
+	[ -d sample/build ] || mkdir -p sample/build
+
+	$(CC) sample/src/df.c -o sample/build/df $(CFLAGS_NP)
 	
 clean:
 	rm sample/build/*

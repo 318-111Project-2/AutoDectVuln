@@ -6,6 +6,7 @@ VULN_DICT = {
     'FormatStringBug': 0,
     'HeapOverFlow': 0,
     'UseAfterFree': 0,
+    'DoubleFree': 0,
 }
 
 def create_report_file(argv) :
