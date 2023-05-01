@@ -29,8 +29,8 @@ def get_argv() -> argparse.Namespace:
     load the binary file
 '''
 def load(file_path: str) -> angr.project.Project:
-    #proj = angr.Project(file_path, auto_load_libs=False)
-    proj = angr.Project(file_path, auto_load_lib=True)
+    proj = angr.Project(file_path, auto_load_libs=False)
+    #proj = angr.Project(file_path, auto_load_lib=True)
     return proj
 
 
