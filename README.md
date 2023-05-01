@@ -70,7 +70,7 @@ python3 web.py
 - Protection
 
   - RELRO: Full RELRO
-  - Stack: No canary found
+  - Stack: Canary found
   - NX: NX enabled
   - PIE: PIE enabled
   - FCF: None
