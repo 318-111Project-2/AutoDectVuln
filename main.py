@@ -30,8 +30,8 @@ def get_argv() -> argparse.Namespace:
     load the binary file
 '''
 def load(file_path: str) -> angr.project.Project:
-    #proj = angr.Project(file_path, auto_load_libs=False)
-    proj = angr.Project(file_path, auto_load_lib=True)
+    proj = angr.Project(file_path, auto_load_libs=False)
+    #proj = angr.Project(file_path, auto_load_lib=True)
     return proj
 
 
@@ -76,9 +76,11 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         info('find all()')
         StackOverFlow(proj)
         FormatStringBug(proj)
+        HeapOverFlow(proj)
         do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
         do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
-
+        do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
+    
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
         StackOverFlow(proj)
