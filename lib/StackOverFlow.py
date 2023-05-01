@@ -36,7 +36,12 @@ def print_result(act: angr.sim_state.SimState) -> None:
 
     VULN_DICT["StackOverFlow"] += 1
     
-    
+# check if exist stack canary
+def check_canary(act: angr.sim_state.SimState) -> bool:
+    if act.solver.symbolic(act.regs.bp - 0x4):
+        return True
+    return False
+
 # check the head of basic block
 def check_head(act: angr.sim_state.SimState) -> None:
     block = act.project.factory.block(act.addr)
@@ -79,6 +84,7 @@ def check_end(act: angr.sim_state.SimState) -> None:
     
     insns1 = insns[-2].mnemonic
     insns2 = insns[-1].mnemonic
+
     # print(insns1, insns2)
     if( not (insns1=="leave" and insns2=="ret") ):
         return
@@ -91,24 +97,39 @@ def check_end(act: angr.sim_state.SimState) -> None:
     origin_rbp = act.globals['rbp_list'][ret_addr]
     
     # check return address symbolic
-    ret_stack = act.memory.load(rbp+8, 8, endness=angr.archinfo.Endness.LE)
-    if(ret_stack.symbolic):
-        origin_ret_addr = act.solver.BVV(act.callstack.ret_addr, 64)
-        act.memory.store(rbp+8, origin_ret_addr, endness=angr.archinfo.Endness.LE)
-        #print("ret symbolic")
+    if not check_canary(act):
+        ret_stack = act.memory.load(rbp+8, 8, endness=angr.archinfo.Endness.LE)
+        if(ret_stack.symbolic):
+            origin_ret_addr = act.solver.BVV(act.callstack.ret_addr, 64)
+            act.memory.store(rbp+8, origin_ret_addr, endness=angr.archinfo.Endness.LE)
+            #print("ret symbolic")
 
-        # if et symbolic，then rbp also is symbolic，
-        # don't need to check rbp, and don't let print_result() repeat the output
-        act.memory.store(rbp, origin_rbp)
-        #print("rbp symbolic")
+            # if et symbolic，then rbp also is symbolic，
+            # don't need to check rbp, and don't let print_result() repeat the output
+            act.memory.store(rbp, origin_rbp)
+            #print("rbp symbolic")
 
-        print_result(act)
-        return
+            print_result(act)
+            return
+    else:
+        ret_stack = act.memory.load(rbp+16, 8, endness=angr.archinfo.Endness.LE)
+        if(ret_stack.symbolic):
+            origin_ret_addr = act.solver.BVV(act.callstack.ret_addr, 64)
+            act.memory.store(rbp+16, origin_ret_addr, endness=angr.archinfo.Endness.LE)
+            #print("ret symbolic")
+
+            # if et symbolic，then rbp also is symbolic，
+            # don't need to check rbp, and don't let print_result() repeat the output
+            act.memory.store(rbp, origin_rbp)
+            #print("rbp symbolic")
+
+            print_result(act)
+            return
 
     # check rbp symbolic
     if(rbp_stack.symbolic):
         act.memory.store(rbp, origin_rbp)
-        print("rbp symbolic")
+        #print("rbp symbolic")
         print_result(act)
 
         
@@ -122,9 +143,9 @@ def StackOverFlow(proj: angr.project.Project) -> None:
     )
     
     # save rbp
-    initial_state.globals['rbp_list']={}
-    # save function address
-    initial_state.globals['func_addr_list']={}
+    initial_state.globals['rbp_list'] = {}
+    # save function address 
+    initial_state.globals['func_addr_list'] = {}
 
     # main exlpore
     simgr = proj.factory.simgr(initial_state)
@@ -132,7 +153,6 @@ def StackOverFlow(proj: angr.project.Project) -> None:
         for act in simgr.active:
             check_head(act)
             check_end(act)
-
         simgr.step()
 
 if __name__=='__main__':
