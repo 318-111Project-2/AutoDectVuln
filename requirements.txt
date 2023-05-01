@@ -1,6 +1,5 @@
-angr
-flask
-flask_session
-pwntools
-argparse
-filetype
+angr==9.2.30
+Flask==2.2.3
+Flask-Session==0.4.0
+pwntools==4.9.0
+filetype==1.2.0
