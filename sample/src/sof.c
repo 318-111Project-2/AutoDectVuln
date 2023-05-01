@@ -11,12 +11,12 @@
 
 void  vuln(char str[]) {
 	// stack over flow
-	scanf("%20s", str);
+	scanf("%30s", str);
 }
 
 void  vuln2(char str[]) {
 	// stack over flow
-	scanf("%20s", str);
+	scanf("%30s", str);
 }
 
 int main() {
