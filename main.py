@@ -8,7 +8,8 @@ import pathlib
 
 from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
-from lib.HeapOverFlow import HeapOverFlow
+from lib.HeapVuln import HeapOverFlow
+from lib.HeapVuln import UseAfterFree
 from lib.Tool import *
 
 '''
@@ -77,9 +78,11 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         StackOverFlow(proj)
         FormatStringBug(proj)
         HeapOverFlow(proj)
+        UseAfterFree(proj)
         do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
         do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
         do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
+        do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
     
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
@@ -96,6 +99,11 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         info('find HeapOverFlow()')
         HeapOverFlow(proj)
         do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
+
+    elif argv.module==['use_after_free']:
+        info('find UseAfterFree()')
+        UseAfterFree(proj)
+        do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
 
     
     else:

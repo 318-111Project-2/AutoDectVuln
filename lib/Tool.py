@@ -4,7 +4,8 @@ import pathlib
 VULN_DICT = {
     'StackOverFlow': 0,
     'FormatStringBug': 0,
-    'HeapOverFlow': 0
+    'HeapOverFlow': 0,
+    'UseAfterFree': 0,
 }
 
 def create_report_file(argv) :

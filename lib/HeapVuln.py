@@ -3,6 +3,8 @@ from pwn import *
 from lib.Tool import *
 
 def print_result(act: angr.sim_state.SimState) -> None:
+    module_name = "heap_over_flow" if act.globals['module'] == 'HeapOverFlow' else "use_after_free"
+
     ret_addr = act.callstack.ret_addr
     block=act.project.factory.block(ret_addr)
     func_addr=act.globals['func_block_addr'][block.addr]
@@ -12,7 +14,7 @@ def print_result(act: angr.sim_state.SimState) -> None:
     func = cfg.kb.functions[func_addr]
 
     # do write to report file
-    do_write(f'[*]heap_over_flow found in function: {func.name}\n')
+    do_write(f'[*]{module_name} found in function: {func.name}\n')
     do_write(f'    === Process ===\n')
     for addr in act.history.bbl_addrs:
         try:
@@ -20,8 +22,11 @@ def print_result(act: angr.sim_state.SimState) -> None:
         except:
             pass
     do_write(f'    ===============\n\n')
-
-    VULN_DICT["HeapOverFlow"] += 1
+    
+    if act.globals['module'] == 'HeapOverFlow':
+        VULN_DICT["HeapOverFlow"] += 1
+    elif act.globals['module'] == 'UseAfterFree':
+        VULN_DICT["UseAfterFree"] += 1
 
 def check_malloc(act):
     info(f'I will check malloc. in {hex(act.addr)}')
@@ -30,6 +35,17 @@ def check_malloc(act):
     Arg=act.project.factory.cc().ARG_REGS[0]
     first_param=act.solver.eval(act.regs.get(Arg))
     act.globals['malloc_size']=first_param
+
+def check_free(act):
+    info(f'I will check free. in {hex(act.addr)}')
+
+    # get first parameter address of malloc
+    Arg=act.project.factory.cc().ARG_REGS[0]
+    first_param=act.solver.eval(act.regs.get(Arg))
+
+    # check if first_param in malloc_addr, if not, add it
+    if first_param not in act.globals['free_malloc_addr']:
+        act.globals['free_malloc_addr'].append(first_param)
 
 def check_mem_write(state):
     if state.inspect.mem_write_address == None:
@@ -40,14 +56,22 @@ def check_mem_write(state):
     write_size = state.inspect.mem_write_length
 
     # check if write address in malloc_addr
-    if write_addr in list(state.globals['malloc_addr'].keys()):
+    if write_addr not in list(state.globals['malloc_addr'].keys()):
+        return
+    
+    if state.globals['module'] == 'HeapOverFlow':
         if type(write_size) != int:
             write_size = state.solver.eval(write_size)
             
         # check if write size > malloc size
         if write_size > state.globals['malloc_addr'][write_addr]:
-            print(write_size)
             print("find heap overflow")
+            print('write', 'from', state.inspect.mem_write_address)
+            print_result(state)
+
+    elif state.globals['module'] == 'UseAfterFree':
+        if write_addr in state.globals['free_malloc_addr']:
+            print("find use after free")
             print('write', 'from', state.inspect.mem_write_address)
             print_result(state)
 
@@ -60,18 +84,28 @@ def check_mem_read(state):
     read_size = state.inspect.mem_read_length
 
     # check if read address in malloc_addr
-    if read_addr in list(state.globals['malloc_addr'].keys()):
+    if read_addr not in list(state.globals['malloc_addr'].keys()):
+        return
+
+    if state.globals['module'] == 'HeapOverFlow':
+        # sometimes read_size is BVV, so we need to convert it to int
         if type(read_size) != int:
             read_size = state.solver.eval(read_size)
 
         # check if read size > malloc size
         if read_size > state.globals['malloc_addr'][read_addr]:
-            print(read_size)
             print("find heap overflow")
             print('read', 'from', state.inspect.mem_read_address)
             print_result(state)
+    
+    elif state.globals['module'] == 'UseAfterFree':
+        # check if read address in free_malloc_addr
+        if read_addr in state.globals['free_malloc_addr']:
+            print("find use after free")
+            print('read', 'from', state.inspect.mem_read_address)
+            print_result(state)
 
-def HeapOverFlow(proj):
+def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False):
     # binary process
     initial_state = proj.factory.entry_state(
         add_options = { 
@@ -82,12 +116,15 @@ def HeapOverFlow(proj):
 
     cfg = proj.analyses.CFGFast()
 
+    initial_state.globals['module'] = 'HeapOverFlow' if isHeapOverFlow else 'UseAfterFree'
+
     # if you want to use cfg in other function, you need to add this line
     initial_state.globals['cfg']=cfg
 
     initial_state.globals['func_block_addr']={}
     initial_state.globals['find_malloc_flag']=False
     initial_state.globals['malloc_addr']={}
+    initial_state.globals['free_malloc_addr']=[]
     initial_state.globals['malloc_size']=0
 
     # add breakpoint
@@ -98,7 +135,7 @@ def HeapOverFlow(proj):
     simgr = proj.factory.simgr(initial_state)
     while simgr.active:
         for act in simgr.active:
-
+            
             # get rax after call malloc
             if act.globals['find_malloc_flag']==True:
                     rax = act.solver.eval(act.regs.rax)
@@ -124,16 +161,37 @@ def HeapOverFlow(proj):
 
                     # 避免檢查simprocedures
                     block = act.project.factory.block(act.addr)
-                    if block.instructions <= 2:
+                    if block.instructions > 2:
                         continue
                     check_malloc(act)
                     act.globals['find_malloc_flag'] = True
+                elif func.name == "free":
+
+                    # 避免檢查simprocedures
+                    block = act.project.factory.block(act.addr)
+                    if block.instructions > 2:
+                        continue
+                    check_free(act)
+                    act.globals['find_malloc_flag'] = True
             except:
                 pass
-        simgr.step()    
+        simgr.step() 
+
+def HeapOverFlow(proj):
+    HeapVuln(proj, isHeapOverFlow=True)
+
+def UseAfterFree(proj):
+    HeapVuln(proj, isUseAfterFree=True)
 
 if __name__=='__main__':
-    info('Heap OVer Flow case:')
-    file_path = 'sample/build/hof'
-    proj = angr.Projecr(file_path, auto_load_libs=False)
-    HeapOverFlow(proj) 
+    choose = input('HeapVuln: \n\t1. HeapOverFlow 2. UseAfterFree\n')
+    if choose == '1':
+        info('Heap Over Flow case:')
+        file_path = 'sample/build/hof'
+        proj = angr.Project(file_path, auto_load_libs=False)
+        HeapOverFlow(proj)
+    elif choose == '2':
+        info('Use After Free case:')
+        file_path = 'sample/build/uaf'
+        proj = angr.Project(file_path, auto_load_libs=False)
+        UseAfterFree(proj)
