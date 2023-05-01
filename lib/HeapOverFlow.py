@@ -94,7 +94,6 @@ def HeapOverFlow(proj):
     initial_state.inspect.b('mem_write', when=angr.BP_AFTER, action=check_mem_write)
     initial_state.inspect.b('mem_read', when=angr.BP_AFTER, action=check_mem_read)
 
-
     # main exlpore
     simgr = proj.factory.simgr(initial_state)
     while simgr.active:
@@ -114,21 +113,27 @@ def HeapOverFlow(proj):
                 func = cfg.kb.functions[act.addr]
 
                 # get function block address
-                block_addrs=list(func.block_addrs)
+                block_addrs = list(func.block_addrs)
                 for block_addr in block_addrs:
-                    act.globals['func_block_addr'][block_addr]=act.addr
+                    act.globals['func_block_addr'][block_addr] = act.addr
 
                 
-                act.globals['find_malloc_flag']=False
+                act.globals['find_malloc_flag'] = False
                 # print(func.name)
                 if func.name == 'malloc':
 
                     # 避免檢查simprocedures
                     block = act.project.factory.block(act.addr)
-                    if block.instructions <=2:
+                    if block.instructions <= 2:
                         continue
                     check_malloc(act)
-                    act.globals['find_malloc_flag']=True
+                    act.globals['find_malloc_flag'] = True
             except:
                 pass
-        simgr.step()     
+        simgr.step()    
+
+if __name__=='__main__':
+    info('Heap OVer Flow case:')
+    file_path = 'sample/build/hof'
+    proj = angr.Projecr(file_path, auto_load_libs=False)
+    HeapOverFlow(proj) 
