@@ -69,11 +69,11 @@ python3 web.py
 
 - Protection
 
-  - RELRO: Full RELRO
-  - Stack: Canary found
-  - NX: NX enabled
-  - PIE: PIE enabled
-  - FCF: None
+  - **RELRO**: Full RELRO
+  - **Stack**: Canary found
+  - **NX**: NX enabled
+  - **PIE**: PIE enabled
+  - **FCF**: None
 
 - Vulnerability
 
