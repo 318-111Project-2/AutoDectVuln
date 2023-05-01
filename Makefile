@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS_NP = -fcf-protection=none -fno-stack-protector
+CFLAGS_NP = -fcf-protection=none -fstack-protector
 
 make:
 	[ -d sample/build ] || mkdir -p sample/build
