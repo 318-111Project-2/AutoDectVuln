@@ -38,9 +38,11 @@ def print_result(act: angr.sim_state.SimState) -> None:
     
 # check if exist stack canary
 def check_canary(act: angr.sim_state.SimState) -> bool:
-    if act.solver.symbolic(act.regs.bp - 0x4):
-        return True
-    return False
+    try:
+        has_canary = act.solver.symbolic(proj.loader.main_object.get_symbol('___stack_chk_fail').rebased_addr) != 0
+    except:
+        return False
+    return True
 
 # check the head of basic block
 def check_head(act: angr.sim_state.SimState) -> None:
