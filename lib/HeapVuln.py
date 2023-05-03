@@ -175,7 +175,7 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=Fals
 
                     # 避免檢查simprocedures
                     block = act.project.factory.block(act.addr)
-                    if block.instructions > 2:
+                    if block.instructions <= 2:
                         continue
                     check_malloc(act)
                     act.globals['find_malloc_flag'] = True
