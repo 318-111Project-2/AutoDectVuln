@@ -8,3 +8,4 @@ report*.txt
 **/flask_session/*
 **/config.py
 **/*.log
+**/o/*
