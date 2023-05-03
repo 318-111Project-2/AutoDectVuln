@@ -8,9 +8,7 @@ import pathlib
 
 from lib.StackOverFlow import StackOverFlow
 from lib.FormatStringBug import FormatStringBug
-from lib.HeapVuln import HeapOverFlow
-from lib.HeapVuln import UseAfterFree
-from lib.HeapVuln import DoubleFree
+from lib.HeapVuln import HeapOverFlow, UseAfterFree, DoubleFree
 from lib.Tool import *
 
 '''
@@ -35,6 +33,37 @@ def load(file_path: str) -> angr.project.Project:
     proj = angr.Project(file_path, auto_load_libs=False)
     #proj = angr.Project(file_path, auto_load_lib=True)
     return proj
+
+'''
+    write to report file
+'''
+def write_to_report(argv, proj, action) -> None:
+    '''format
+        File path:
+        Architecture:
+        Start Time:
+        =========== Vulnerability Detection =========
+        
+        ...
+        
+        [*]StackOverFlow: {VULN_DICT["StackOverFlow"]
+        [*]FormatStringBug: {VULN_DICT["FormatStringBug"]
+        [*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]
+        [*]UseAfterFree: {VULN_DICT["UseAfterFree"]
+        [*]DoubleFree: {VULN_DICT["DoubleFree"]
+    '''
+    if action=='init':
+        do_write(f'File path: {argv.proj}\n')
+        do_write(f'Architecture: {str(proj.arch)[1:-1]}\n')
+        do_write(f'Start Time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
+        do_write(f'=========== Vulnerability Detection =========\n\n')
+    
+    elif action=='finish':
+        do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
+        do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
+        do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
+        do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
+        do_write(f'[*]DoubleFree: {VULN_DICT["DoubleFree"]}\n')
 
 
 '''
@@ -66,10 +95,8 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
     # ==================================== write report =====================================
     #create report file path
     create_report_file(argv)
-    do_write(f'File path: {argv.proj}\n')
-    do_write(f'Architecture: {str(proj.arch)[1:-1]}\n')
-    do_write(f'Start Time: {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}\n\n')
-    do_write(f'=========== Vulnerability Detection =========\n\n')
+    write_to_report(argv, proj, 'init')
+
     # =======================================================================================
 
 
@@ -81,37 +108,25 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         HeapOverFlow(proj)
         UseAfterFree(proj)
         DoubleFree(proj)
-        do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
-        do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
-        do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
-        do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
-        do_write(f'[*]DoubleFree: {VULN_DICT["DoubleFree"]}\n')
-    
+
     elif argv.module==['stack_over_flow']:
         info('find StackOverFlow()')
         StackOverFlow(proj)
-        do_write(f'[*]StackOverFlow: {VULN_DICT["StackOverFlow"]}\n')
-
     
     elif argv.module==['format_string_bug']:
         info('find FormatStringBug()')
         FormatStringBug(proj)
-        do_write(f'[*]FormatStringBug: {VULN_DICT["FormatStringBug"]}\n')
-
     elif argv.module==['heap_over_flow']:
         info('find HeapOverFlow()')
         HeapOverFlow(proj)
-        do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
 
     elif argv.module==['use_after_free']:
         info('find UseAfterFree()')
         UseAfterFree(proj)
-        do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
 
     elif argv.module==['double_free']:
         info('find DoubleFree()')
         DoubleFree(proj)
-        do_write(f'[*]DoubleFree: {VULN_DICT["DoubleFree"]}\n')
     
     else:
         info('input error')
@@ -120,6 +135,7 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
 
 
     # ==================================== finish ==========================================
+    write_to_report(argv, proj, 'finish')
     close_report_file()
     # ======================================================================================            
     
