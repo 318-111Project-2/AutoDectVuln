@@ -10,7 +10,8 @@
 
 - Dockerfile
 
-  ```sh # build
+  ```sh 
+  # build
   sudo docker build -t <tag name> .
 
   # run (option)
@@ -65,7 +66,8 @@ python3 web.py
 
 - Binary Arch
 
-  - arch: amd64/x86-64
+  - Arch: amd64/x86-64
+  - File: ELF 
 
 - Protection
 
