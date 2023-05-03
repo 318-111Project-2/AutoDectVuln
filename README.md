@@ -58,7 +58,7 @@
 cd lib/web
 cp app/configs/config.py.template app/configs/config.py
 # edit app/configs/config.py
-# change SECRET_KEY value
+# change SECRET_KEY value (openssl rand -base64 32)
 python3 web.py
 ```
 

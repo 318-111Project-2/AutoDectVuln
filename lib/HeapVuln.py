@@ -152,9 +152,9 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=Fals
             
             # get rax after call malloc
             if act.globals['find_malloc_flag']==True:
-                    rax = act.solver.eval(act.regs.rax)
-                    act.globals['malloc_addr'][rax]=act.globals['malloc_size']
-                    act.globals['find_malloc_flag']=False
+                rax = act.solver.eval(act.regs.rax)
+                act.globals['malloc_addr'][rax]=act.globals['malloc_size']
+                act.globals['find_malloc_flag']=False
 
             '''
                 check first parameter of "malloc" 

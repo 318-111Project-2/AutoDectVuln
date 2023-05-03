@@ -59,10 +59,14 @@
                         for (var i = 0; i < files.length; i++) {
                             table_html += '<tr style="height: 50px;line-height: 50px;"><td>' + files[i] + '</td>';
                             table_html += `<td>
-                                <input type="radio" name="module_proc_${i + 1}" value="all" checked>all</input>
-                                <input type="radio" name="module_proc_${i + 1}" value="stack_over_flow">stack_over_flow</input>
-                                <input type="radio" name="module_proc_${i + 1}" value="format_string_bug">format_string_bug</input>
-                                </td>`;
+                                <select class="form-select" name="module_proc_${i + 1}">
+                                    <option value="all" select>all</option>
+                                    <option value="stack_over_flow">stack_over_flow</option>
+                                    <option value="format_string_bug">format_string_bug</option>
+                                    <option value="heap_over_flow">heap_over_flow</option>
+                                    <option value="use_after_free">use_after_free</option>
+                                    <option value="double_free">double_free</option>
+                                </select>`;
                             table_html += `<td id="proc_${i + 1}">waiting</td>`;
                             table_html += `<td id="report_${i + 1}">waiting</td>`;
                         }
@@ -101,7 +105,7 @@
                 $('#analyze').prop('disabled', true);
                 data = {};
                 for (var i = 0; i < files.length; i++) {
-                    input = $(`input[name=module_proc_${i + 1}]:checked`)
+                    input = $(`select[name=module_proc_${i + 1}]`)
                     console.log(input)
                     data[files[i]] = input.val();
                     input.parent().html(data[files[i]])
