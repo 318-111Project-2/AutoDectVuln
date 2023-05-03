@@ -83,11 +83,11 @@ python3 web.py
   - [x] format_string_bug
   - [ ] use_after_free
   - [ ] heap_over_flow
-  - [ ] \*double_free
+  - [ ] double_free
 
 - Testing
 
-  - [ ] Organising test sample
+  - [ ] Organize test sample
   - [ ] Testing
 
 - Report File
