@@ -104,6 +104,9 @@ Home
                         if (!data.progress.includes('running')) {
                             clearInterval(check_progress);
                             $('#analyzeBtn').text('分析完成');
+                            $('#analyzeBtn').parent().append(`<a class='btn lg:btn-wide btn-error text-lg' href='/clean'>
+                                    離開
+                                </a > `);
                         }
                     },
                 });
