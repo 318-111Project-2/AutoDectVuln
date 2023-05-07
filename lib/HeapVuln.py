@@ -217,4 +217,4 @@ if __name__=='__main__':
         info('Double Free case:')
         file_path = 'sample/build/uaf'
         proj = angr.Project(file_path, auto_load_libs=False)
-        UseAfterFree(proj)
+        DoubleFree(proj)

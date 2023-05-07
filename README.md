@@ -10,7 +10,7 @@
 
 - Dockerfile
 
-  ```sh 
+  ```sh
   # build
   sudo docker build -t <tag name> .
 
@@ -53,21 +53,30 @@
 
 ## Web
 
-```sh
-# need to install flask and flask_session
-cd lib/web
-cp app/configs/config.py.template app/configs/config.py
-# edit app/configs/config.py
-# change SECRET_KEY value (openssl rand -base64 32)
-python3 web.py
-```
+- change working directory to web
+
+  ```sh
+  cd lib/web
+  ```
+
+- change SECRET_KEY value in app/configs/config.py
+
+  ```sh
+  ./install_web.sh
+  ```
+
+- run web
+
+  ```sh
+  python3 web.py
+  ```
 
 ## Goals
 
 - Binary Arch
 
   - Arch: amd64/x86-64
-  - File: ELF 
+  - File: ELF
 
 - Protection
 
