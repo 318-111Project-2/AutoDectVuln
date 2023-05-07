@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="bg-base-200" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <link href="{{ url_for('static', filename='css/fontawsome.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='css/daisyui.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ url_for('static', filename='js/tailwind.js') }}"></script>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+    <div class="flex flex-col h-screen justify-between">
+
+        <div class="flex flex-col h-screen justify-between">
+
+            <div class="flex justify-center mb-auto mx-5 lg:mx-0 mt-5">
+
+                <div
+                    class="flex-1 order-first w-full max-w-screen-md mx-auto ease-out transform mr-0 grid justify-items-end">
+                    <div class="hidden lg:block ml-5 w-auto">
+                        {% include 'layouts/partials/sidebar.html' %}
+                    </div>
+                </div>
+
+
+                <div class="flex-none w-full max-w-screen-md ease-out transform mx-5">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+                <div class="flex-1 order-last w-full max-w-screen-md mx-auto ease-out transform mr-0">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

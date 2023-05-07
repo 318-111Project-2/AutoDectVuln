@@ -1,0 +1,105 @@
+{% extends 'layouts/master.html' %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<div class="text-base breadcrumbs">
+    <ul>
+        <li>
+            <a href="{{url_for('home')}}">
+                <p class="text-base font-medium mr-1.5">
+                    <i class="fa-solid fa-house"></i>
+                </p>
+                首頁
+            </a>
+            <a>
+                檔案分析
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="flex flex-col gap-5 mb-5">
+    <div class="card w-100 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <ul class="steps">
+                <li class="step step-primary">第一步</li>
+                <li class="step">第二步</li>
+            </ul>
+            <div class="mt-1">
+                <p class="text-2xl font-semibold mb-5" id="stepTitle">
+                    上傳檔案
+                </p>
+                <div id="stepContent">
+                    <label>
+                        <span class="btn btn-info text-lg">選擇檔案</span>
+                        <input type="file" id="file" multiple
+                            class="file-input file-input-bordered file-input-info [&::file-selector-button]:hidden p-2.5 hidden" />
+                    </label>
+                    <p class="text-lg font-semibold my-2">
+                        您上傳的檔案
+                    </p>
+                    <ul class="list-disc" id="file_list">
+                        <li>無</li>
+                    </ul>
+                    <div class="flex lg:flex-row justify-center gap-5 mt-5">
+                        <button class="btn btn-accent text-lg" id="uploadBtn">
+                            <div class="text-lg font-medium mr-2">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            確認上傳
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        $('#file').on('change', function () {
+            var files = $('#file').prop('files');
+            var names = $.map(files, function (val) { return val.name; });
+            var html = '';
+            names.forEach(function (item) {
+                html += '<li>' + item + '</li>';
+            });
+            $('#file_list').html(html);
+        });
+
+        $('#uploadBtn').on('click', function () {
+            var files = $('#file').prop('files');
+            if (files.length == 0) {
+                alert('請選擇檔案');
+                return;
+            }
+            var names = $.map(files, function (val) { return val.name; });
+            var formData = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                formData.append('file', files[i]);
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/upload',
+                data: formData,
+                contentType: false,
+                cache: false,
+                processData: false,
+                success: function (data) {
+                    if (data.msg == 'success') {
+                        window.location.href = '/analyze/step2';
+                    } else if (data.msg == 'web_data not exist!') {
+                        window.location.href = '/';
+                    } else {
+                        alert('檔案有誤，請重新選擇檔案');
+                    }
+                },
+            });
+        });
+
+    })();
+</script>
+
+{% endblock %}

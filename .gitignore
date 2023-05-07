@@ -9,3 +9,4 @@ report*.txt
 **/config.py
 **/*.log
 **/o/*
+**/web_data.json

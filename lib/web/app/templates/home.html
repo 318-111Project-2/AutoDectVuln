@@ -1,131 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layouts/master.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
-    <title>home</title>
-</head>
+{% block title %}
+首頁
+{% endblock %}
 
-<body>
-    <div class="container">
-        <div class="row">
-            <h1>Upload</h1>
-        </div>
-        <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm" class="w-50">
-            <div class="input-group mb-3">
-                <input type="file" name="file" multiple class="form-control" id="file">
-                <button class="btn btn-outline-secondary" type="button" id="uploadBtn">Upload</button>
-            </div>
-        </form>
-        <div id="control" style="display: none;">
-            <table id="file_list" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th style="max-width:15%;">File Name</th>
-                        <th>Module</th>
-                        <th style="max-width:15%;">Status</th>
-                        <th style="max-width:15%;">Reports</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <button id="analyze" class="btn btn-primary">Analyze</button>
+{% block content %}
+<div class="text-base breadcrumbs">
+    <ul>
+        <li>
+            <a href="{{url_for('home')}}">
+                <p class="text-base font-medium mr-1.5">
+                    <i class="fa-solid fa-house"></i>
+                </p>
+                首頁
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="flex flex-col gap-5 mb-5">
+    <div class="card w-100 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title">首頁</h2>
+            <p>左方為功能列表</p>
         </div>
     </div>
+</div>
 
-    <script>
-        $(document).ready(function () {
-            files = null;
-            $('#uploadBtn').click(function (e) {
-                e.preventDefault();
-                var form_data = new FormData($('#uploadForm')[0]);
-                $.ajax({
-                    type: 'POST',
-                    url: '/upload',
-                    data: form_data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-                    success: function (data) {
-                        console.log(data.msg);
-                        table_html = '';
-                        files = data.binary_files;
-                        for (var i = 0; i < files.length; i++) {
-                            table_html += '<tr style="height: 50px;line-height: 50px;"><td>' + files[i] + '</td>';
-                            table_html += `<td>
-                                <select class="form-select" name="module_proc_${i + 1}">
-                                    <option value="all" select>all</option>
-                                    <option value="stack_over_flow">stack_over_flow</option>
-                                    <option value="format_string_bug">format_string_bug</option>
-                                    <option value="heap_over_flow">heap_over_flow</option>
-                                    <option value="use_after_free">use_after_free</option>
-                                    <option value="double_free">double_free</option>
-                                </select>`;
-                            table_html += `<td id="proc_${i + 1}">waiting</td>`;
-                            table_html += `<td id="report_${i + 1}">waiting</td>`;
-                        }
-                        $('#control').show();
-                        $('#file_list').children('tbody').prepend(table_html);
-                    },
-                });
-            });
-
-            var update_progress = () => {
-                var check_progress = setInterval(() => {
-                    $.ajax({
-                        type: 'GET',
-                        url: '/analyze_progress',
-                        success: function (data) {
-                            data.progress.forEach((element, index) => {
-                                //console.log(index + 1, element)
-                                if (element == 'finished') {
-                                    $('#report_' + (index + 1)).html(`<a href='/report/${index}' target='_blank' class="btn btn-success btn-sm">
-                                                                        <i class="bi bi-download me-2"></i>
-                                                                        download
-                                                                    </a>`);
-                                }
-                                $('#proc_' + (index + 1)).html(element);
-                            });
-                            if (!data.progress.includes('running')) {
-                                clearInterval(check_progress);
-                            }
-                        },
-                    });
-                }, 250);
-            }
-
-            $('#analyze').click(function (e) {
-                e.preventDefault();
-                $('#analyze').prop('disabled', true);
-                data = {};
-                for (var i = 0; i < files.length; i++) {
-                    input = $(`select[name=module_proc_${i + 1}]`)
-                    console.log(input)
-                    data[files[i]] = input.val();
-                    input.parent().html(data[files[i]])
-                }
-                console.log(data);
-                $.ajax({
-                    type: 'POST',
-                    url: '/analyze',
-                    data: JSON.stringify(data),
-                    contentType: "application/json",
-                    cache: false,
-                    processData: false,
-                    success: function (data) {
-                        update_progress();
-                    },
-                });
-            });
-        });
-    </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-</body>
-
-</html>
+{% endblock %}

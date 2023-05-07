@@ -1,9 +1,8 @@
 import logging
-import os
+import os, json
 
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, redirect
 from app.configs.config import config
-from flask_session import Session
 from app.views.analyze import analyzeRoute
 from app.views.report import reportRoute
 from app.views.upload import uploadRoute
@@ -45,9 +44,6 @@ def create_app(config_name):
     # Load config
     app.config.from_object(config[config_name])
 
-    # Initialize Session
-    Session(app)
-
     # Register blueprints
     app.register_blueprint(analyzeRoute, url_prefix='')
     app.register_blueprint(reportRoute, url_prefix='')
@@ -58,12 +54,43 @@ def create_app(config_name):
 
     @app.route("/")
     def home():
-        session['binary_files'] = {}
-        session['reports']={}
-        session['procs'] = {}
-        session['procs_name'] = []
-        session['test'] = False
+        web_data={
+            'analyze_status':{
+                'status': 'not start',
+                'step': 0,
+                'binary_files': {}, # {'filename': 'hash_filename'}
+                'procs': {}, # {'hash_filename': False}
+                'procs_name': [], # [{'filename': 'hash_filename'}]
+                'reports': {}, # {'filename': 'report_path'}
+            },
+            'reports':{},
+        }
 
-        return render_template('home.html')
+        if os.path.isfile('web_data.json'):
+            with open('web_data.json', 'r') as f:
+                web_data = json.load(f)
+        else:
+            with open('web_data.json', 'w') as f:
+                json.dump(web_data, f)
+
+        return render_template('home.html', sidebar='home')
+    
+    @app.route("/clean")
+    def clean():
+        web_data={
+            'analyze_status':{
+                'status': 'not start',
+                'step': 0,
+                'binary_files': {}, # {'filename': 'hash_filename'}
+                'procs': {}, # {'hash_filename': False}
+                'procs_name': [], # [{'filename': 'hash_filename'}]
+                'reports': {}, # {'filename': 'report_path'}
+            },
+            'reports':{},
+        }
+        with open('web_data.json', 'w') as f:
+            json.dump(web_data, f)
+
+        return redirect('/')
 
     return app

@@ -1,0 +1,25 @@
+<li class="my-2">
+    <a class="truncate rounded-md flex gap-4 {{ 'active' if sidebar == 'home' else ''}}" href="{{ url_for('home') }}">
+        <span class="flex-none h-6 w-6 leading-6">
+            <i class="fa-solid fa-house"></i>
+        </span>
+        <span class="flex-1 leading-6">首頁</span>
+    </a>
+</li>
+<li class="my-2">
+    <a class="truncate rounded-md flex gap-4 {{ 'active' if sidebar == 'analyze' else ''}}"
+        href="{{ url_for('analyzeRoute.analyze_get') }}">
+        <span class="flex-none h-6 w-6 leading-6">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </span>
+        <span class="flex-1 leading-6">檔案分析</span>
+    </a>
+</li>
+<li class="my-2">
+    <a class="truncate rounded-md flex gap-4">
+        <span class="flex-none h-6 w-6 leading-6">
+            <i class="fa-regular fa-file-lines"></i>
+        </span>
+        <span class="flex-1 leading-6">分析結果列表</span>
+    </a>
+</li>

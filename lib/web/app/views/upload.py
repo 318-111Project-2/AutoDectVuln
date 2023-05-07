@@ -1,19 +1,26 @@
-import os, time, pathlib
+import os, time, pathlib, json
 import filetype
 
-from flask import Blueprint, flash, request, redirect, url_for, render_template, jsonify, session
-from flask import current_app
-from flask import abort
+from flask import Blueprint, request
 from hashlib import sha256
-from flask_session import Session
 from werkzeug.utils import secure_filename
 
 uploadRoute = Blueprint('uploadRoute', __name__)
 
 @uploadRoute.route("/upload", methods=['POST'])
 def upload():
+    web_data = {}
+    if os.path.isfile('web_data.json'):
+        with open('web_data.json', 'r') as f:
+            web_data = json.load(f)
+    else:
+        return {
+            'msg': 'web_data not exist!',
+        }
+
     files = request.files.getlist('file')
     binary_files = {}
+    procs_name = []
     for file in files:
         if file:
             filename = secure_filename(file.filename)
@@ -38,10 +45,17 @@ def upload():
                 }
             
             binary_files[filename] = hash_filename
+            procs_name.append({
+                    filename: hash_filename
+                })
             
     
     print(binary_files)
-    session['binary_files']=binary_files
+    web_data['analyze_status']['binary_files'] = binary_files
+    web_data['analyze_status']['procs_name'] = procs_name
+
+    with open('web_data.json', 'w') as f:
+        json.dump(web_data, f)
 
     return {
         'msg': 'success',

@@ -1,9 +1,9 @@
-import os
+import os, json
 import time
 import pathlib
 import multiprocessing as mp
 
-from flask import Blueprint, request, session
+from flask import Blueprint, request, render_template, url_for, redirect
 import sys 
 sys.path.append("../..") 
 from main import main as main_analyze
@@ -22,13 +22,81 @@ def job(file_path, file_name, module):
     main_analyze(WEB_Data=WEB_Data)
     os.remove(binary_file)
 
+@analyzeRoute.route("/analyze", methods=['GET'])
+def analyze_get():
+    web_data={
+        'analyze_status':{
+            'status': 'not start',
+            'step': 0,
+            'binary_files': {}, # {'filename': 'hash_filename'}
+            'procs': {}, # {'hash_filename': False}
+            'procs_name': [], # [{'filename': 'hash_filename'}]
+            'reports': {}, # {'filename': 'report_path'}
+        },
+        'reports':{},
+    }
+    if os.path.isfile('web_data.json'):
+        with open('web_data.json', 'r') as f:
+            web_data = json.load(f)
+    else:
+        with open('web_data.json', 'w') as f:
+            json.dump(web_data, f)
+    web_data['analyze_status']['step'] = 0
+    with open('web_data.json', 'w') as f:
+        json.dump(web_data, f)
+
+    return redirect(url_for('analyzeRoute.analyze_step1'))
+
+@analyzeRoute.route("/analyze/step1", methods=['GET'])
+def analyze_step1():
+    web_data = {}
+    if os.path.isfile('web_data.json'):
+        with open('web_data.json', 'r') as f:
+            web_data = json.load(f)
+    else:
+        return redirect(url_for('analyzeRoute.analyze_get'))
+    if web_data['analyze_status']['step'] != 0:
+        return redirect(url_for('analyzeRoute.analyze_get'))
+
+    web_data['analyze_status']['step'] = 1
+    with open('web_data.json', 'w') as f:
+        json.dump(web_data, f)
+    
+    return render_template('analyze/step1.html', sidebar='analyze')
+
+@analyzeRoute.route("/analyze/step2", methods=['GET'])
+def analyze_step2():
+    web_data = {}
+    if os.path.isfile('web_data.json'):
+        with open('web_data.json', 'r') as f:
+            web_data = json.load(f)
+    else:
+        return redirect(url_for('analyzeRoute.analyze_get'))
+    if web_data['analyze_status']['step'] != 1:
+        return redirect(url_for('analyzeRoute.analyze_get'))
+    
+    web_data['analyze_status']['step'] = 2
+    with open('web_data.json', 'w') as f:
+        json.dump(web_data, f)
+    
+    return render_template('analyze/step2.html', sidebar='analyze', analyze_status=web_data['analyze_status'])
+
 
 @analyzeRoute.route("/analyze", methods=['POST'])
 def analyze():
+    web_data = {}
+    if os.path.isfile('web_data.json'):
+        with open('web_data.json', 'r') as f:
+            web_data = json.load(f)
+    else:
+        return {
+            'msg': 'web_data not exist!',
+        }
+    
     procs = {}
     procs_name = []
 
-    binary_files = session['binary_files']
+    binary_files = web_data['analyze_status']['binary_files']
 
     modules = request.get_json()
 
@@ -45,16 +113,17 @@ def analyze():
         p1 = mp.Process(target=job, args=(
             binary_files[binary_file], binary_file, modules[binary_file]))
         
-        session['reports'][binary_file] = report_path
+
+        web_data['analyze_status']['reports'][binary_file] = report_path
+        with open('web_data.json', 'w') as f:
+            json.dump(web_data, f)
 
         procs[hash_filename] = False
-        procs_name.append({
-                binary_file: hash_filename
-            })
 
         p1.start()
 
-    session['procs_name'] = procs_name
+    with open('web_data.json', 'w') as f:
+        json.dump(web_data, f)
 
     return {
         'msg': 'success',
@@ -64,12 +133,20 @@ def analyze():
 
 @analyzeRoute.route("/analyze_progress")
 def analyze_progress():
-    procs_name = session['procs_name']
+    web_data = {}
+    if os.path.isfile('web_data.json'):
+        with open('web_data.json', 'r') as f:
+            web_data = json.load(f)
+    else:
+        return {
+            'msg': 'web_data not exist!',
+        }
+    procs_name = web_data['analyze_status']['procs_name']
 
     status = []
     for name_dict in procs_name:
         name=list(name_dict.keys())[0]
-        report_path = session['reports'][name]
+        report_path = web_data['analyze_status']['reports'][name]
         report_path = pathlib.Path(report_path).resolve()
         if not report_path.exists():
             status.append('running')

@@ -1,0 +1,142 @@
+{% extends 'layouts/master.html' %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<div class="text-base breadcrumbs">
+    <ul>
+        <li>
+            <a href="{{url_for('home')}}">
+                <p class="text-base font-medium mr-1.5">
+                    <i class="fa-solid fa-house"></i>
+                </p>
+                首頁
+            </a>
+            <a>
+                檔案分析
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="flex flex-col gap-5 mb-5">
+    <div class="card w-100 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <ul class="steps">
+                <li class="step step-primary">第一步</li>
+                <li class="step step-primary">第二步</li>
+            </ul>
+            <div class="mt-1">
+                <p class="text-2xl font-semibold mb-5" id="stepTitle">
+                    選擇模組
+                </p>
+                <div id="stepContent">
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra w-full">
+                            <!-- head -->
+                            <thead>
+                                <tr>
+                                    <th>檔案名稱</th>
+                                    <th>模組</th>
+                                    <th>狀態</th>
+                                    <th>下載報告</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for dict_item in analyze_status['procs_name']%}
+                                <tr>
+                                    {% for key, value in dict_item.items() %}
+                                    <td class="file_name">{{key}}</td>
+                                    {% endfor %}
+                                    <td>
+                                        <select class="select select-bordered select-sm w-full max-w-xs"
+                                            name="module_proc_{{ loop.index0 }}">
+                                            <option value="all" select>all</option>
+                                            <option value="stack_over_flow">stack_over_flow</option>
+                                            <option value="format_string_bug">format_string_bug</option>
+                                            <option value="heap_over_flow">heap_over_flow</option>
+                                            <option value="use_after_free">use_after_free</option>
+                                            <option value="double_free">double_free</option>
+                                        </select>
+                                    </td>
+                                    <td id="proc_{{ loop.index0 }}">等待中...</td>
+                                    <td id="report_{{ loop.index0 }}">等待中...</td>
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="flex lg:flex-row justify-center gap-5 mt-5">
+                        <button class="btn btn-accent text-lg" id="analyzeBtn">
+                            確認
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var update_progress = () => {
+            var check_progress = setInterval(() => {
+                $.ajax({
+                    type: 'GET',
+                    url: '/analyze_progress',
+                    success: function (data) {
+                        data.progress.forEach((element, index) => {
+                            if (element == 'finished' && $('#report_' + (index)).text() == '等待中...') {
+                                $('#report_' + (index)).html(`<a href='/report/${index}' target='_blank' class="btn btn-success btn-sm">
+                                                                        <div class="mr-2">
+                                                                            <i class="fa-solid fa-download"></i>
+                                                                        </div>
+                                                                        download
+                                                                    </a>`);
+                            }
+                            if (element == 'running')
+                                element = '分析中...';
+                            else if (element == 'finished')
+                                element = '分析完成';
+                            $('#proc_' + (index)).html(element);
+                        });
+                        if (!data.progress.includes('running')) {
+                            clearInterval(check_progress);
+                            $('#analyzeBtn').text('分析完成');
+                        }
+                    },
+                });
+            }, 250);
+        }
+
+        $('#analyzeBtn').on('click', function () {
+            $('#analyzeBtn').prop('disabled', true);
+            $('#analyzeBtn').text('分析中...');
+            var selects = $('#stepContent select')
+            var data = {};
+            for (var i = 0; i < selects.length; i++) {
+                input = $(`select[name=module_proc_${i}]`)
+                console.log(input)
+                file = input.parent().siblings('.file_name').text()
+                data[file] = input.val();
+                input.parent().html(data[file])
+            }
+            console.log(data);
+            $.ajax({
+                type: 'POST',
+                url: '/analyze',
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                cache: false,
+                processData: false,
+                success: function (data) {
+                    update_progress();
+                },
+            });
+        })
+
+    })();
+</script>
+
+{% endblock %}

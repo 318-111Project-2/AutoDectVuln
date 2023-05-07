@@ -59,12 +59,6 @@
   cd lib/web
   ```
 
-- change SECRET_KEY value in app/configs/config.py
-
-  ```sh
-  ./install_web.sh
-  ```
-
 - run web
 
   ```sh
