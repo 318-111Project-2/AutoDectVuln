@@ -1,11 +1,6 @@
-
-
-
-
-
 /* have 1 format */
 
-
+/*spend 7s*/
 
 #include <stdio.h>
 #include "std_testcase.h"

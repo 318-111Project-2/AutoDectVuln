@@ -1,30 +1,10 @@
- /*have 1 format string bug*/
+/* have 1 format string bug */
 
- /*Link  https://samate.nist.gov/SARD/test-cases/235216/versions/2.0.0*/
+/* spend 19s */
 
- /*spend 5s*/
+/* Link https://samate.nist.gov/SARD/test-cases/235229/versions/2.0.0 */
 
-#include "std_testcase.h"
 
-#ifndef _WIN32
-#include <wchar.h>
-#endif
-
-#define ENV_VARIABLE L"ADD"
-
-#ifdef _WIN32
-#define GETENV _wgetenv
-#else
-#define GETENV getenv
-#endif
-
-#ifdef _WIN32
-#define SNPRINTF _snwprintf
-#else
-#define SNPRINTF swprintf
-#endif
-
-#ifndef OMITBAD
 
 #include <inttypes.h> // for PRId64
 #include <stdio.h>
@@ -238,57 +218,85 @@ char** globalArgv = NULL;
 }
 #endif
 
-char *fmts[] = {
-	"<%s>\n",
-	"[%s]\n",
-};
 
-void test(char *str)
+/* TEMPLATE GENERATED TESTCASE FILE
+Filename: CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_15.c
+Label Definition File: CWE134_Uncontrolled_Format_String.label.xml
+Template File: sources-sinks-15.tmpl.c
+*/
+/*
+ * @description
+ * CWE: 134 Uncontrolled Format String
+ * BadSource: environment Read input from an environment variable
+ * GoodSource: Copy a fixed string into data
+ * Sinks: swprintf
+ *    GoodSink: snwprintf with "%s" as the third argument and data as the fourth
+ *    BadSink : snwprintf with data as the third argument
+ * Flow Variant: 15 Control flow: switch(6) and switch(7)
+ *
+ * */
+
+#include "std_testcase.h"
+
+#ifndef _WIN32
+#include <wchar.h>
+#endif
+
+#define ENV_VARIABLE L"ADD"
+
+#ifdef _WIN32
+#define GETENV _wgetenv
+#else
+#define GETENV getenv
+#endif
+
+#ifdef _WIN32
+#define SNPRINTF _snwprintf
+#else
+#define SNPRINTF swprintf
+#endif
+
+#ifndef OMITBAD
+
+void CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_15_bad()
 {
-	int idx;
-
-	idx = (str[0] == '!');
-	printf(fmts[idx], str);				/* bad */
-}
-
-void CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_02_bad()
-{
-    printLine("1");
     wchar_t * data;
     wchar_t dataBuffer[100] = L"";
     data = dataBuffer;
-    if(1)
+    switch(6)
     {
+    case 6:
+    {
+        /* Append input from an environment variable to data */
+        size_t dataLen = wcslen(data);
+        wchar_t * environment = GETENV(ENV_VARIABLE);
+        /* If there is data in the environment variable */
+        if (environment != NULL)
         {
-            printLine("1");
-            /* Append input from an environment variable to data */
-            size_t dataLen = wcslen(data);
-            wchar_t * environment = GETENV(ENV_VARIABLE);
-            /* If there is data in the environment variable */
-            if (environment != NULL)
-            {
-                /* POTENTIAL FLAW: Read data from an environment variable */
-                wcsncat(data+dataLen, environment, 100-dataLen-1);
-            }
+            /* POTENTIAL FLAW: Read data from an environment variable */
+            wcsncat(data+dataLen, environment, 100-dataLen-1);
         }
     }
-    if(1)
+    break;
+    default:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
+    }
+    switch(7)
     {
-        {
-            /*char *userstr;
-	        scanf("%s",userstr);
-	        test(userstr);*/
-            printLine("1");
-            //char *dest;
-            wchar_t *dest;
-            //printLine(dest);
-            /* POTENTIAL FLAW: Do not specify the format allowing a possible format string vulnerability */
-            SNPRINTF(dest, 100-1, data);
-            printf(dest);
-            /*char *userstr;
-	        scanf("%s",userstr);
-	        test(userstr);*/
-        }
+    case 7:
+    {
+        wchar_t *dest;
+        /* POTENTIAL FLAW: Do not specify the format allowing a possible format string vulnerability */
+        SNPRINTF(dest, 100-1, data);
+        printf(dest);
+    }
+    break;
+    default:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
     }
 }
 
@@ -296,123 +304,161 @@ void CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_02_bad()
 
 #ifndef OMITGOOD
 
-/* goodB2G1() - use badsource and goodsink by changing the second 1 to 0 */
+/* goodB2G1() - use badsource and goodsink by changing the second switch to switch(8) */
 static void goodB2G1()
 {
     wchar_t * data;
     wchar_t dataBuffer[100] = L"";
     data = dataBuffer;
-    if(1)
+    switch(6)
     {
+    case 6:
+    {
+        /* Append input from an environment variable to data */
+        size_t dataLen = wcslen(data);
+        wchar_t * environment = GETENV(ENV_VARIABLE);
+        /* If there is data in the environment variable */
+        if (environment != NULL)
         {
-            /* Append input from an environment variable to data */
-            size_t dataLen = wcslen(data);
-            wchar_t * environment = GETENV(ENV_VARIABLE);
-            /* If there is data in the environment variable */
-            if (environment != NULL)
-            {
-                /* POTENTIAL FLAW: Read data from an environment variable */
-                wcsncat(data+dataLen, environment, 100-dataLen-1);
-            }
+            /* POTENTIAL FLAW: Read data from an environment variable */
+            wcsncat(data+dataLen, environment, 100-dataLen-1);
         }
     }
-    if(0)
-    {
+    break;
+    default:
         /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
         printLine("Benign, fixed string");
+        break;
     }
-    else
+    switch(8)
     {
-        {
-            wchar_t dest[100] = L"";
-            /* FIX: Specify the format disallowing a format string vulnerability */
-            SNPRINTF(dest, 100-1, L"%s", data);
-            printWLine(dest);
-        }
+    case 7:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
+    default:
+    {
+        wchar_t dest[100] = L"";
+        /* FIX: Specify the format disallowing a format string vulnerability */
+        SNPRINTF(dest, 100-1, L"%s", data);
+        printWLine(dest);
+    }
+    break;
     }
 }
 
-/* goodB2G2() - use badsource and goodsink by reversing the blocks in the second if */
+/* goodB2G2() - use badsource and goodsink by reversing the blocks in the second switch */
 static void goodB2G2()
 {
     wchar_t * data;
     wchar_t dataBuffer[100] = L"";
     data = dataBuffer;
-    if(1)
+    switch(6)
     {
+    case 6:
+    {
+        /* Append input from an environment variable to data */
+        size_t dataLen = wcslen(data);
+        wchar_t * environment = GETENV(ENV_VARIABLE);
+        /* If there is data in the environment variable */
+        if (environment != NULL)
         {
-            /* Append input from an environment variable to data */
-            size_t dataLen = wcslen(data);
-            wchar_t * environment = GETENV(ENV_VARIABLE);
-            /* If there is data in the environment variable */
-            if (environment != NULL)
-            {
-                /* POTENTIAL FLAW: Read data from an environment variable */
-                wcsncat(data+dataLen, environment, 100-dataLen-1);
-            }
+            /* POTENTIAL FLAW: Read data from an environment variable */
+            wcsncat(data+dataLen, environment, 100-dataLen-1);
         }
     }
-    if(1)
+    break;
+    default:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
+    }
+    switch(7)
     {
-        {
-            wchar_t dest[100] = L"";
-            /* FIX: Specify the format disallowing a format string vulnerability */
-            SNPRINTF(dest, 100-1, L"%s", data);
-            printWLine(dest);
-        }
+    case 7:
+    {
+        wchar_t dest[100] = L"";
+        /* FIX: Specify the format disallowing a format string vulnerability */
+        SNPRINTF(dest, 100-1, L"%s", data);
+        printWLine(dest);
+    }
+    break;
+    default:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
     }
 }
 
-/* goodG2B1() - use goodsource and badsink by changing the first 1 to 0 */
+/* goodG2B1() - use goodsource and badsink by changing the first switch to switch(5) */
 static void goodG2B1()
 {
     wchar_t * data;
     wchar_t dataBuffer[100] = L"";
     data = dataBuffer;
-    if(0)
+    switch(5)
     {
+    case 6:
         /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
         printLine("Benign, fixed string");
-    }
-    else
-    {
+        break;
+    default:
         /* FIX: Use a fixed string that does not contain a format specifier */
         wcscpy(data, L"fixedstringtest");
+        break;
     }
-    if(1)
+    switch(7)
     {
-        {
-            wchar_t dest[100] = L"";
-            /* POTENTIAL FLAW: Do not specify the format allowing a possible format string vulnerability */
-            SNPRINTF(dest, 100-1, data);
-            printWLine(dest);
-        }
+    case 7:
+    {
+        wchar_t dest[100] = L"";
+        /* POTENTIAL FLAW: Do not specify the format allowing a possible format string vulnerability */
+        SNPRINTF(dest, 100-1, data);
+        printWLine(dest);
+    }
+    break;
+    default:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
     }
 }
 
-/* goodG2B2() - use goodsource and badsink by reversing the blocks in the first if */
+/* goodG2B2() - use goodsource and badsink by reversing the blocks in the first switch */
 static void goodG2B2()
 {
     wchar_t * data;
     wchar_t dataBuffer[100] = L"";
     data = dataBuffer;
-    if(1)
+    switch(6)
     {
+    case 6:
         /* FIX: Use a fixed string that does not contain a format specifier */
         wcscpy(data, L"fixedstringtest");
+        break;
+    default:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
     }
-    if(1)
+    switch(7)
     {
-        {
-            wchar_t dest[100] = L"";
-            /* POTENTIAL FLAW: Do not specify the format allowing a possible format string vulnerability */
-            SNPRINTF(dest, 100-1, data);
-            printWLine(dest);
-        }
+    case 7:
+    {
+        wchar_t dest[100] = L"";
+        /* POTENTIAL FLAW: Do not specify the format allowing a possible format string vulnerability */
+        SNPRINTF(dest, 100-1, data);
+        printWLine(dest);
+    }
+    break;
+    default:
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
+        break;
     }
 }
 
-void CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_02_good()
+void CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_15_good()
 {
     goodB2G1();
     goodB2G2();
@@ -430,21 +476,10 @@ void CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_02_good()
 
 int main(int argc, char * argv[])
 {
-     /* seed randomness */
+    /* seed randomness */
     srand( (unsigned)time(NULL) );
-    #ifndef OMITGOOD
-    printLine("Calling good()...");
-    CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_02_good();
-    printLine("Finished good()");
-    #endif /* OMITGOOD */
-    #ifndef OMITBAD
     printLine("Calling bad()...");
-    CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_02_bad();
+    CWE134_Uncontrolled_Format_String__wchar_t_environment_snprintf_15_bad();
     printLine("Finished bad()");
-    #endif /* OMITBAD */
     return 0;
 }
-
-
-
-
