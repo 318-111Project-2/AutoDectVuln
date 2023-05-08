@@ -99,7 +99,7 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
 
     # =======================================================================================
 
-
+    Start_time = time.time()
     # ====================================== modules ========================================
     if argv.module==['all']:
         info('find all()')
@@ -132,7 +132,9 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
         info('input error')
 
     # ======================================================================================            
-
+    End_time = time.time()
+    do_write(f'[*]Time: {round(End_time-Start_time, 2)} seconds.\n')
+    print(f'[*]Time: {round(End_time-Start_time, 2)} seconds')
 
     # ==================================== finish ==========================================
     write_to_report(argv, proj, 'finish')
