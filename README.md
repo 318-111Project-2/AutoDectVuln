@@ -84,9 +84,9 @@
 
   - [x] stack_over_flow
   - [x] format_string_bug
-  - [ ] use_after_free
-  - [ ] heap_over_flow
-  - [ ] double_free
+  - [x] use_after_free
+  - [x] heap_over_flow
+  - [x] double_free
 
 - Testing
 
