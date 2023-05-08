@@ -9,6 +9,7 @@ uploadRoute = Blueprint('uploadRoute', __name__)
 
 @uploadRoute.route("/upload", methods=['POST'])
 def upload():
+    os.rmdir('uploads')
     web_data = {}
     if os.path.isfile('web_data.json'):
         with open('web_data.json', 'r') as f:
