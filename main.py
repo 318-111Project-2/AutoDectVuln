@@ -140,7 +140,7 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
     write_to_report(argv, proj, 'finish')
     close_report_file()
     # ======================================================================================            
-    
+    return VULN_DICT
 
 if __name__=='__main__':
     # magic

@@ -2,6 +2,7 @@ import os, json
 import time
 import pathlib
 import multiprocessing as mp
+from app.database.ConnectDB import ConnectDB as con
 
 from flask import Blueprint, request, render_template, url_for, redirect
 import sys 
@@ -10,152 +11,133 @@ from main import main as main_analyze
 
 analyzeRoute = Blueprint('analyzeRoute', __name__)
 
-def job(file_path, file_name, module):
-    binary_file = f'uploads/{file_path}'
+def job(hash_name, file_name, module, file_id):
+    binary_file = f'uploads/{hash_name}'
     report_path = f'report/report_{file_name}_{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}.txt'
     WEB_Data = {
-        'proj': pathlib.Path(f'uploads/{file_path}').resolve(),
+        'proj': pathlib.Path(f'uploads/{hash_name}').resolve(),
         'save': pathlib.Path(report_path).resolve(),
         'module': [module],
-        'limit_time': 60
+        'limit_time': 60,
+        'file_id': file_id
     }
-    main_analyze(WEB_Data=WEB_Data)
+    analyze_results = main_analyze(WEB_Data=WEB_Data)
     os.remove(binary_file)
+
+    db = con()
+    query = f"select * from files where id = {file_id}"
+    file = db.select(query)[0]
+    results_id = file['results_id']
+    query = f"select * from results where id = {results_id}"
+    result = db.select(query)[0]
+    query = "update results set progress = ? where id = ?"
+    data = ('50', results_id)
+    db.update(query, data)
+    for key, value in analyze_results.items():
+        if value != 0:
+            db.insert('vulns', ['results_id', 'vuln_name', 'vuln_num'], (results_id, key, value))
+
+    db.close()
 
 @analyzeRoute.route("/analyze", methods=['GET'])
 def analyze_get():
-    web_data={
-        'analyze_status':{
-            'status': 'not start',
-            'step': 0,
-            'binary_files': {}, # {'filename': 'hash_filename'}
-            'procs': {}, # {'hash_filename': False}
-            'procs_name': [], # [{'filename': 'hash_filename'}]
-            'reports': {}, # {'filename': 'report_path'}
-        },
-        'reports':{},
-    }
-    if os.path.isfile('web_data.json'):
-        with open('web_data.json', 'r') as f:
-            web_data = json.load(f)
-    else:
-        with open('web_data.json', 'w') as f:
-            json.dump(web_data, f)
-    web_data['analyze_status']['step'] = 0
-    with open('web_data.json', 'w') as f:
-        json.dump(web_data, f)
 
     return redirect(url_for('analyzeRoute.analyze_step1'))
 
 @analyzeRoute.route("/analyze/step1", methods=['GET'])
 def analyze_step1():
-    web_data = {}
-    if os.path.isfile('web_data.json'):
-        with open('web_data.json', 'r') as f:
-            web_data = json.load(f)
-    else:
-        return redirect(url_for('analyzeRoute.analyze_get'))
-    if web_data['analyze_status']['step'] != 0:
-        return redirect(url_for('analyzeRoute.analyze_get'))
-
-    web_data['analyze_status']['step'] = 1
-    with open('web_data.json', 'w') as f:
-        json.dump(web_data, f)
     
     return render_template('analyze/step1.html', sidebar='analyze')
 
 @analyzeRoute.route("/analyze/step2", methods=['GET'])
 def analyze_step2():
-    web_data = {}
-    if os.path.isfile('web_data.json'):
-        with open('web_data.json', 'r') as f:
-            web_data = json.load(f)
-    else:
-        return redirect(url_for('analyzeRoute.analyze_get'))
-    if web_data['analyze_status']['step'] != 1:
-        return redirect(url_for('analyzeRoute.analyze_get'))
+    db = con()
+    query = f"select * from analyzes order by id desc limit 1"
+    analyze = db.select(query)
+    if len(analyze) == 0:
+        return redirect(url_for('home'))
+    analyze_id = analyze[0]['id']
+
+    query = f"select * from files where analyze_id = {analyze_id}"
+    files = db.select(query)
+    files_dict = {}
+    for file in files:
+        files_dict[file['id']] = file['file_name']
+
+    db.close()
     
-    web_data['analyze_status']['step'] = 2
-    with open('web_data.json', 'w') as f:
-        json.dump(web_data, f)
-    
-    return render_template('analyze/step2.html', sidebar='analyze', analyze_status=web_data['analyze_status'])
+    return render_template('analyze/step2.html', sidebar='analyze', files=files_dict)
 
 
 @analyzeRoute.route("/analyze", methods=['POST'])
 def analyze():
-    web_data = {}
-    if os.path.isfile('web_data.json'):
-        with open('web_data.json', 'r') as f:
-            web_data = json.load(f)
-    else:
-        return {
-            'msg': 'web_data not exist!',
-        }
-    
-    procs = {}
-    procs_name = []
+    db = con()
+    query = f"select * from analyzes order by id desc limit 1"
+    analyze = db.select(query)
+    if len(analyze) == 0:
+        return redirect(url_for('home'))
+    analyze_id = analyze[0]['id']
 
-    binary_files = web_data['analyze_status']['binary_files']
+    query = f"select * from files where analyze_id = {analyze_id}"
+    files = db.select(query)
 
     modules = request.get_json()
 
-    for binary_file in binary_files:
-        hash_filename = binary_files[binary_file]
-        file_path = os.path.join('uploads', hash_filename)
+    for file in files:
+        file_id = file['id']
+        module = modules[str(file['id'])]
+        file_name = file['file_name']
+        hash_name = file['hash_name']
+        file_path = os.path.join('uploads', hash_name)
         if not (os.path.isfile(file_path)):
+            query = "update analyzes set status = ? , message = ? where id = ?"
+            data = ('error', 'file not exist!', analyze_id)
+            db.update(query, data)
             print('file not exist!')
             return {
                 'msg': 'file not exist!',
             }
 
-        report_path = f'report/report_{binary_file}_{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}.txt'
+        report_path = f'report/report_{file_name}_{time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}.txt'
         p1 = mp.Process(target=job, args=(
-            binary_files[binary_file], binary_file, modules[binary_file]))
+            hash_name, file_name, module, file_id))
         
+        results_id = db.insert('results', ['analyze_id', 'module'], (analyze_id, module))
 
-        web_data['analyze_status']['reports'][binary_file] = report_path
-        with open('web_data.json', 'w') as f:
-            json.dump(web_data, f)
-
-        procs[hash_filename] = False
+        query = "update files set results_id = ? where id = ?"
+        data = (results_id, file['id'])
+        db.update(query, data)
 
         p1.start()
 
-    with open('web_data.json', 'w') as f:
-        json.dump(web_data, f)
+    db.close()
 
     return {
         'msg': 'success',
-        'binary_files': list(binary_files.keys())
     }
 
 
 @analyzeRoute.route("/analyze_progress")
 def analyze_progress():
-    web_data = {}
-    if os.path.isfile('web_data.json'):
-        with open('web_data.json', 'r') as f:
-            web_data = json.load(f)
-    else:
-        return {
-            'msg': 'web_data not exist!',
-        }
-    procs_name = web_data['analyze_status']['procs_name']
+    db = con()
+    query = f"select * from analyzes order by id desc limit 1"
+    analyze = db.select(query)
+    if len(analyze) == 0:
+        return redirect(url_for('home'))
+    analyze_id = analyze[0]['id']
 
-    status = []
-    for name_dict in procs_name:
-        name=list(name_dict.keys())[0]
-        report_path = web_data['analyze_status']['reports'][name]
-        report_path = pathlib.Path(report_path).resolve()
-        if not report_path.exists():
-            status.append('running')
-            continue
-        file_stats = os.stat(report_path)
-        if file_stats.st_size == 0:
-            status.append('running')
-            continue
-        status.append('finished')
+    status = {}
+
+    files = db.select(f"select * from files where analyze_id = {analyze_id}")
+    for file in files:
+        result_id = file['results_id']
+        results = db.select(f"select * from results where id = {result_id} and progress is not null")
+        if len(results) == 0:
+            status[file['id']] = 'running'
+        else:
+            status[file['id']] = 'finished'
+
+    db.close()
     return {
         'msg': 'success',
         'progress': status

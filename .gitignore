@@ -8,4 +8,4 @@ report*.txt
 **/flask_session/*
 **/*.log
 **/o/*
-**/web_data.json
+**/database.db

@@ -40,18 +40,15 @@ Home
                                     <th>檔案名稱</th>
                                     <th>模組</th>
                                     <th>狀態</th>
-                                    <th>下載報告</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {%for dict_item in analyze_status['procs_name']%}
-                                <tr>
-                                    {% for key, value in dict_item.items() %}
-                                    <td class="file_name">{{key}}</td>
-                                    {% endfor %}
+                                {%for key, value in files.items()%}
+                                <tr target="{{key}}">
+                                    <td>{{value}}</td>
                                     <td>
                                         <select class="select select-bordered select-sm w-full max-w-xs"
-                                            name="module_proc_{{ loop.index0 }}">
+                                            target="{{key}}">
                                             <option value="all" select>all</option>
                                             <option value="stack_over_flow">stack_over_flow</option>
                                             <option value="format_string_bug">format_string_bug</option>
@@ -60,8 +57,7 @@ Home
                                             <option value="double_free">double_free</option>
                                         </select>
                                     </td>
-                                    <td id="proc_{{ loop.index0 }}">等待中...</td>
-                                    <td id="report_{{ loop.index0 }}">等待中...</td>
+                                    <td class="status" target="{{ key }}">等待中...</td>
                                 </tr>
                                 {%endfor%}
                             </tbody>
@@ -80,33 +76,36 @@ Home
 
 <script>
     (function () {
+        var files = $('tr[target]');
         var update_progress = () => {
             var check_progress = setInterval(() => {
                 $.ajax({
                     type: 'GET',
                     url: '/analyze_progress',
                     success: function (data) {
-                        data.progress.forEach((element, index) => {
-                            if (element == 'finished' && $('#report_' + (index)).text() == '等待中...') {
-                                $('#report_' + (index)).html(`<a href='/report/${index}' target='_blank' class="btn btn-success btn-sm">
-                                                                        <div class="mr-2">
-                                                                            <i class="fa-solid fa-download"></i>
-                                                                        </div>
-                                                                        download
-                                                                    </a>`);
+                        var finishedFlag = true;
+                        $.each(data.progress, function (index, value) {
+                            if (value == 'running')
+                                finishedFlag = false;
+                            var status_td = $(`.status[target=${index}]`);
+                            console.log(status_td, index, status_td.text(), status_td.text() == '等待中...', value, value == 'finished')
+                            if (value == 'finished' && status_td.text() == '等待中...') {
+                                html = `<a href='/report/${index}' target='_blank' class="btn btn-success btn-sm">
+                                            <div class="mr-2">
+                                                <i class="fa-solid fa-download"></i>
+                                            </div>
+                                            download
+                                        </a>`
+                                status_td.html(html);
                             }
-                            if (element == 'running')
-                                element = '分析中...';
-                            else if (element == 'finished')
-                                element = '分析完成';
-                            $('#proc_' + (index)).html(element);
+
                         });
-                        if (!data.progress.includes('running')) {
+                        if (finishedFlag) {
                             clearInterval(check_progress);
                             $('#analyzeBtn').text('分析完成');
-                            $('#analyzeBtn').parent().append(`<a class='btn lg:btn-wide btn-error text-lg' href='/clean'>
-                                    離開
-                                </a > `);
+                            $('#analyzeBtn').parent().append(`<a class='btn lg:btn-wide btn-error text-lg' href='/'>
+                                離開
+                            </a > `);
                         }
                     },
                 });
@@ -118,14 +117,12 @@ Home
             $('#analyzeBtn').text('分析中...');
             var selects = $('#stepContent select')
             var data = {};
-            for (var i = 0; i < selects.length; i++) {
-                input = $(`select[name=module_proc_${i}]`)
-                console.log(input)
-                file = input.parent().siblings('.file_name').text()
-                data[file] = input.val();
-                input.parent().html(data[file])
-            }
-            console.log(data);
+            files.each((index, element) => {
+                var file_id = $(element).attr('target');
+                var select = $(`select[target=${file_id}]`);
+                data[file_id] = select.val();
+                select.parent().html(data[file_id]);
+            });
             $.ajax({
                 type: 'POST',
                 url: '/analyze',
@@ -134,7 +131,11 @@ Home
                 cache: false,
                 processData: false,
                 success: function (data) {
-                    update_progress();
+                    if (data.msg == 'success')
+                        update_progress();
+                    else {
+                        alert('分析失敗\n請重新上傳檔案');
+                    }
                 },
             });
         })

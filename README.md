@@ -59,6 +59,12 @@
   cd lib/web
   ```
 
+- setup database (sqlite3) **first time only**
+
+  ```sh
+  python3 app/database/init_db.py
+  ```
+
 - run web
 
   ```sh
