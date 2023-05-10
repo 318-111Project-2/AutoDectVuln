@@ -37,7 +37,7 @@ def load(file_path: str) -> angr.project.Project:
 '''
     write to report file
 '''
-def write_to_report(argv, proj, action, analyze_time=[]) -> None:
+def write_to_report(argv, proj, action, total_time=None) -> None:
     
     '''format
         File path:
@@ -52,6 +52,7 @@ def write_to_report(argv, proj, action, analyze_time=[]) -> None:
         [*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]
         [*]UseAfterFree: {VULN_DICT["UseAfterFree"]
         [*]DoubleFree: {VULN_DICT["DoubleFree"]
+        ================ Total Time =================
         [*]Time: {} seconds.
     '''
 
@@ -67,7 +68,8 @@ def write_to_report(argv, proj, action, analyze_time=[]) -> None:
         do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
         do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
         do_write(f'[*]DoubleFree: {VULN_DICT["DoubleFree"]}\n')
-        do_write(f'[*]Time: {round(analyze_time[1]-analyze_time[0], 2)} seconds.\n')
+        do_write(f'\n================ Total Time =================\n')
+        do_write(f'[*]Time: {total_time} seconds.\n')
 
 '''
     Web Control
@@ -138,10 +140,12 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
 
     # ======================================================================================            
     End_time = time.time()
-    print(f'[*]Time: {round(End_time-Start_time, 2)} seconds')
+    
+    total_time = round(End_time-Start_time, 2)
+    print(f'[*]Time: {total_time} seconds')
 
     # ==================================== finish ==========================================
-    write_to_report(argv, proj, 'finish', [Start_time, End_time])
+    write_to_report(argv, proj, 'finish', total_time)
     close_report_file()
     # ======================================================================================            
     
