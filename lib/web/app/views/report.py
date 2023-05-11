@@ -30,17 +30,23 @@ def report_index():
 
     return render_template('reports/index.html', sidebar='report', isnull=isnull, analyzes=list_analyzes)
 
-@reportRoute.route("/report/<name>", methods=['GET'])
-def report_file(name):
-    web_data = {}
-    if os.path.isfile('web_data.json'):
-        with open('web_data.json', 'r') as f:
-            web_data = json.load(f)
-    else:
-        return redirect(url_for('home'))
-    
-    procs_name = web_data['analyze_status']['procs_name']
-    name=list(procs_name[int(name)].keys())[0]
-    report_path = web_data['analyze_status']['reports'][name]
-    report_path = pathlib.Path(report_path).resolve()
-    return send_file(report_path, as_attachment=True)
+@reportRoute.route("/reports/<analyze_id>", methods=['GET'])
+def report_detail(analyze_id):
+    db = con()
+    query = f"select an.created, f.file_name, r.module, r.run_time, r.progress, v.vuln_name, v.vuln_num from ((analyzes as an inner join files as f on an.id = f.analyze_id) inner join results as r on r.id = f.results_id) left join vulns as v on v.results_id = r.id where an.id = {analyze_id}"
+    datas = db.select(query)
+    print(len(datas))
+    analyze_datas = []
+    for data in datas:
+        analyze_datas.append({
+            'created': datetime.strptime(data['created'], '%Y-%m-%d %H:%M:%S') + timedelta(hours=8),
+            'file_name': data['file_name'],
+            'module': data['module'],
+            'run_time': data['run_time'],
+            'progress': data['progress'],
+            'vuln_name': data['vuln_name'],
+            'vuln_num': data['vuln_num'],
+        })
+        # print(data['created'], data['file_name'], data['module'], data['run_time'], data['progress'], data['vuln_name'], data['vuln_num'])
+
+    return render_template('reports/detail.html', sidebar='report', analyze_datas=analyze_datas)

@@ -43,10 +43,12 @@ def job(hash_name, file_name, module, file_id):
 def analyze_get():
     db = con()
     query = f"select * from analyzes order by id desc limit 1"
-    analyze = db.select(query)[0]
-    if analyze['status'] == 'pending' or analyze['status'] == 'running':
-        db.close()
-        return redirect(url_for('analyzeRoute.analyze_step2'))
+    analyze = db.select(query)
+    if len(analyze) != 0:
+        analyze = analyze[0]
+        if analyze['status'] == 'pending' or analyze['status'] == 'running':
+            db.close()
+            return redirect(url_for('analyzeRoute.analyze_step2'))
     
     return redirect(url_for('analyzeRoute.analyze_step1'))
 
@@ -54,10 +56,12 @@ def analyze_get():
 def analyze_step1():
     db = con()
     query = f"select * from analyzes order by id desc limit 1"
-    analyze = db.select(query)[0]
-    if analyze['status'] == 'pending' or analyze['status'] == 'running':
-        db.close()
-        return redirect(url_for('analyzeRoute.analyze_step2'))
+    analyze = db.select(query)
+    if len(analyze) != 0:
+        analyze = analyze[0]
+        if analyze['status'] == 'pending' or analyze['status'] == 'running':
+            db.close()
+            return redirect(url_for('analyzeRoute.analyze_step2'))
     
     return render_template('analyze/step1.html', sidebar='analyze')
 
@@ -69,7 +73,6 @@ def analyze_step2():
     if len(analyze) == 0:
         return redirect(url_for('home'))
     analyze = analyze[0]
-
 
     if analyze['status'] == 'finished':
         db.close()

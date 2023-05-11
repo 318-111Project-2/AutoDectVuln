@@ -14,7 +14,9 @@
                 </p>
                 首頁
             </a>
-            <a>
+        </li>
+        <li>
+            <a href="{{ url_for(request.endpoint) }}">
                 檔案分析
             </a>
         </li>
@@ -112,7 +114,7 @@
                             if (status_td.children().length == 0)
                                 status_td.html(html);
                         } else if (value == 'finished') {
-                            html = `<button class="btn btn-success btn-sm no-animation">
+                            html = `<button class="btn btn-success btn-sm no-animation cursor-default">
                                         分析完成
                                     </button>`
                             if (status_td.text() != html)

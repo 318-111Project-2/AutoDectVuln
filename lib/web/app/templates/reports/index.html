@@ -12,6 +12,11 @@
                 <p class="text-base font-medium mr-1.5">
                     <i class="fa-solid fa-house"></i>
                 </p>
+                首頁
+            </a>
+        </li>
+        <li>
+            <a href="{{ url_for(request.endpoint) }}">
                 分析結果列表
             </a>
         </li>
@@ -106,7 +111,8 @@
                                 {{ analyze['message'] }}
                             <td class="max-w-fit">
                                 {% if analyze['status'] == 'finished' %}
-                                <a class="btn btn-primary">查看</a>
+                                <a class="btn btn-primary" target="_blank"
+                                    href="{{ url_for('reportRoute.report_detail', analyze_id=analyze['id'])}}">查看</a>
                                 {% else %}
                                 無
                                 {% endif %}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分析結果</title>
+</head>
+
+<body>
+    {% for analyze_data in analyze_datas %}
+    <h1>{{ analyze_data['file_name'] }}</h1>
+    <p>
+        {{ analyze_data['created']}}
+    </p>
+    <p>
+        {{ analyze_data['module']}}
+    </p>
+    <p>
+        {{ analyze_data['run_time']}}
+    </p>
+    <p>
+        {{ analyze_data['progress']}}
+    </p>
+    <p>
+        {{ analyze_data['vuln_name']}}
+    </p>
+    <p>
+        {{ analyze_data['vuln_num']}}
+    </p>
+    {%endfor%}
+</body>
+
+</html>
