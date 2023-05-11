@@ -37,7 +37,8 @@ def load(file_path: str) -> angr.project.Project:
 '''
     write to report file
 '''
-def write_to_report(argv, proj, action) -> None:
+def write_to_report(argv, proj, action, total_time=None) -> None:
+    
     '''format
         File path:
         Architecture:
@@ -51,7 +52,10 @@ def write_to_report(argv, proj, action) -> None:
         [*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]
         [*]UseAfterFree: {VULN_DICT["UseAfterFree"]
         [*]DoubleFree: {VULN_DICT["DoubleFree"]
+        ================ Total Time =================
+        [*]Time: {} seconds.
     '''
+
     if action=='init':
         do_write(f'File path: {argv.proj}\n')
         do_write(f'Architecture: {str(proj.arch)[1:-1]}\n')
@@ -64,7 +68,8 @@ def write_to_report(argv, proj, action) -> None:
         do_write(f'[*]HeapOverFlow: {VULN_DICT["HeapOverFlow"]}\n')
         do_write(f'[*]UseAfterFree: {VULN_DICT["UseAfterFree"]}\n')
         do_write(f'[*]DoubleFree: {VULN_DICT["DoubleFree"]}\n')
-
+        do_write(f'\n================ Total Time =================\n')
+        do_write(f'[*]Time: {total_time} seconds.\n')
 
 '''
     Web Control
@@ -76,7 +81,9 @@ class Web_Control:
         self.module = module
         self.limit_time = limit_time
 
-# main function
+'''
+    main
+'''
 def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
 
     # ================================== initialize =========================================
@@ -133,13 +140,15 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
 
     # ======================================================================================            
     End_time = time.time()
-    do_write(f'[*]Time: {round(End_time-Start_time, 2)} seconds.\n')
-    print(f'[*]Time: {round(End_time-Start_time, 2)} seconds')
+    
+    total_time = round(End_time-Start_time, 2)
+    print(f'[*]Time: {total_time} seconds')
 
     # ==================================== finish ==========================================
-    write_to_report(argv, proj, 'finish')
+    write_to_report(argv, proj, 'finish', total_time)
     close_report_file()
     # ======================================================================================            
+    
     return VULN_DICT
 
 if __name__=='__main__':

@@ -3,31 +3,11 @@
 ## Getting Started
 
 - Ubuntu 20.04
-
   ```
   ./install.sh
   ```
 
-- Dockerfile
-
-  ```sh
-  # build
-  sudo docker build -t <tag name> .
-
-  # run (option)
-  sudo docker run <tag name>
-
-  # run with interactive interface
-  sudo docker run -it --rm <tag name> /bin/bash
-
-  # install
-  ./install.sh
-  ```
-
-  or
-
-- docker-compose.yml
-
+- docker
   ```sh
   # up
   docker-compose up
