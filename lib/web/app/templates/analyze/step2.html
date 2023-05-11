@@ -1,7 +1,7 @@
 {% extends 'layouts/master.html' %}
 
 {% block title %}
-Home
+檔案分析
 {% endblock %}
 
 {% block content %}
@@ -43,12 +43,15 @@ Home
                                 </tr>
                             </thead>
                             <tbody>
-                                {%for key, value in files.items()%}
-                                <tr target="{{key}}">
-                                    <td>{{value}}</td>
+                                {%for file in files%}
+                                <tr target="{{file['id']}}">
+                                    <td>{{file['file_name']}}</td>
                                     <td>
+                                        {%if isRunning %}
+                                        {{ file['module'] }}
+                                        {% else %}
                                         <select class="select select-bordered select-sm w-full max-w-xs"
-                                            target="{{key}}">
+                                            target="{{file['id']}}">
                                             <option value="all" select>all</option>
                                             <option value="stack_over_flow">stack_over_flow</option>
                                             <option value="format_string_bug">format_string_bug</option>
@@ -56,8 +59,9 @@ Home
                                             <option value="use_after_free">use_after_free</option>
                                             <option value="double_free">double_free</option>
                                         </select>
+                                        {% endif %}
                                     </td>
-                                    <td class="status" target="{{ key }}">等待中...</td>
+                                    <td class="status" target="{{ file['id'] }}">等待中...</td>
                                 </tr>
                                 {%endfor%}
                             </tbody>
@@ -66,6 +70,9 @@ Home
                     <div class="flex lg:flex-row justify-center gap-5 mt-5">
                         <button class="btn btn-accent text-lg" id="analyzeBtn">
                             確認
+                        </button>
+                        <button class="btn btn-outline btn-error text-lg" id="cancelBtn">
+                            取消，回上一步
                         </button>
                     </div>
                 </div>
@@ -76,71 +83,98 @@ Home
 
 <script>
     (function () {
-        var files = $('tr[target]');
-        var update_progress = () => {
-            var check_progress = setInterval(() => {
-                $.ajax({
-                    type: 'GET',
-                    url: '/analyze_progress',
-                    success: function (data) {
-                        var finishedFlag = true;
-                        $.each(data.progress, function (index, value) {
-                            if (value == 'running')
-                                finishedFlag = false;
-                            var status_td = $(`.status[target=${index}]`);
-                            console.log(status_td, index, status_td.text(), status_td.text() == '等待中...', value, value == 'finished')
-                            if (value == 'finished' && status_td.text() == '等待中...') {
-                                html = `<a href='/report/${index}' target='_blank' class="btn btn-success btn-sm">
+
+        var isRunning = {% if isRunning %} true {% else %} false {% endif %};
+
+
+
+    var files = $('tr[target]');
+    var update_progress = () => {
+        var check_progress = setInterval(() => {
+            $.ajax({
+                type: 'GET',
+                url: '/analyze_progress',
+                success: function (data) {
+                    var finishedFlag = true;
+                    $.each(data.progress, function (index, value) {
+                        if (value == 'running')
+                            finishedFlag = false;
+                        var status_td = $(`.status[target=${index}]`);
+                        console.log(status_td, index, status_td.text(), status_td.text() == '等待中...', value, value == 'finished')
+                        if (value == 'finished' && status_td.text() == '等待中...') {
+                            html = `<a href='/report/${index}' target='_blank' class="btn btn-success btn-sm">
                                             <div class="mr-2">
                                                 <i class="fa-solid fa-download"></i>
                                             </div>
                                             download
                                         </a>`
-                                status_td.html(html);
-                            }
+                            status_td.html(html);
+                        }
 
-                        });
-                        if (finishedFlag) {
-                            clearInterval(check_progress);
-                            $('#analyzeBtn').text('分析完成');
-                            $('#analyzeBtn').parent().append(`<a class='btn lg:btn-wide btn-error text-lg' href='/'>
+                    });
+                    if (finishedFlag) {
+                        clearInterval(check_progress);
+                        $('#analyzeBtn').text('分析完成');
+                        $('#analyzeBtn').parent().append(`<a class='btn lg:btn-wide btn-error text-lg' href='/'>
                                 離開
                             </a > `);
-                        }
-                    },
-                });
-            }, 250);
-        }
-
-        $('#analyzeBtn').on('click', function () {
-            $('#analyzeBtn').prop('disabled', true);
-            $('#analyzeBtn').text('分析中...');
-            var selects = $('#stepContent select')
-            var data = {};
-            files.each((index, element) => {
-                var file_id = $(element).attr('target');
-                var select = $(`select[target=${file_id}]`);
-                data[file_id] = select.val();
-                select.parent().html(data[file_id]);
-            });
-            $.ajax({
-                type: 'POST',
-                url: '/analyze',
-                data: JSON.stringify(data),
-                contentType: "application/json",
-                cache: false,
-                processData: false,
-                success: function (data) {
-                    if (data.msg == 'success')
-                        update_progress();
-                    else {
-                        alert('分析失敗\n請重新上傳檔案');
                     }
                 },
             });
-        })
+        }, 250);
+    }
 
-    })();
+    if (isRunning) {
+        $('#analyzeBtn').prop('disabled', true);
+        $('#analyzeBtn').text('分析中...');
+        $('#cancelBtn').addClass('hidden');
+        update_progress();
+    }
+
+    $('#analyzeBtn').on('click', function () {
+        $('#analyzeBtn').prop('disabled', true);
+        $('#analyzeBtn').text('分析中...');
+        var selects = $('#stepContent select')
+        var data = {};
+        files.each((index, element) => {
+            var file_id = $(element).attr('target');
+            var select = $(`select[target=${file_id}]`);
+            data[file_id] = select.val();
+            select.parent().html(data[file_id]);
+        });
+        $.ajax({
+            type: 'POST',
+            url: '/analyze',
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            cache: false,
+            processData: false,
+            success: function (data) {
+                if (data.msg == 'success') {
+                    $('#cancelBtn').addClass('hidden');
+                    update_progress();
+                } else {
+                    alert('分析失敗\n請重新上傳檔案');
+                }
+            },
+        });
+    });
+
+    $('#cancelBtn').on('click', function () {
+        $.ajax({
+            type: 'POST',
+            url: '/cancel_analyze',
+            data: JSON.stringify({}),
+            contentType: "application/json",
+            cache: false,
+            processData: false,
+            success: function (data) {
+                window.location.href = '/analyze';
+            },
+        });
+    });
+
+    }) ();
 </script>
 
 {% endblock %}

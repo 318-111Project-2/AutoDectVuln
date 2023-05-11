@@ -1,4 +1,4 @@
-import os, json
+import os
 import time
 import pathlib
 import multiprocessing as mp
@@ -30,7 +30,7 @@ def job(hash_name, file_name, module, file_id):
     results_id = file['results_id']
     query = f"select * from results where id = {results_id}"
     result = db.select(query)[0]
-    query = "update results set progress = ? where id = ?"
+    query = "update results set run_time = ? where id = ?"
     data = ('50', results_id)
     db.update(query, data)
     for key, value in analyze_results.items():
@@ -41,11 +41,23 @@ def job(hash_name, file_name, module, file_id):
 
 @analyzeRoute.route("/analyze", methods=['GET'])
 def analyze_get():
-
+    db = con()
+    query = f"select * from analyzes order by id desc limit 1"
+    analyze = db.select(query)[0]
+    if analyze['status'] == 'pending' or analyze['status'] == 'running':
+        db.close()
+        return redirect(url_for('analyzeRoute.analyze_step2'))
+    
     return redirect(url_for('analyzeRoute.analyze_step1'))
 
 @analyzeRoute.route("/analyze/step1", methods=['GET'])
 def analyze_step1():
+    db = con()
+    query = f"select * from analyzes order by id desc limit 1"
+    analyze = db.select(query)[0]
+    if analyze['status'] == 'pending' or analyze['status'] == 'running':
+        db.close()
+        return redirect(url_for('analyzeRoute.analyze_step2'))
     
     return render_template('analyze/step1.html', sidebar='analyze')
 
@@ -56,17 +68,32 @@ def analyze_step2():
     analyze = db.select(query)
     if len(analyze) == 0:
         return redirect(url_for('home'))
-    analyze_id = analyze[0]['id']
+    analyze = analyze[0]
+
+    isRunning = False
+    if analyze['status'] == 'running':
+        isRunning = True
+    
+    analyze_id = analyze['id']
 
     query = f"select * from files where analyze_id = {analyze_id}"
     files = db.select(query)
-    files_dict = {}
+    files_dict = []
     for file in files:
-        files_dict[file['id']] = file['file_name']
+        module = ''
+        if isRunning:
+            query = f"select * from results where id = {file['results_id']}"
+            result = db.select(query)[0]
+            module = result['module']
+        files_dict.append({
+            'id': file['id'],
+            'file_name': file['file_name'],
+            'module': module,
+        }) 
 
     db.close()
     
-    return render_template('analyze/step2.html', sidebar='analyze', files=files_dict)
+    return render_template('analyze/step2.html', sidebar='analyze', files=files_dict, isRunning=isRunning)
 
 
 @analyzeRoute.route("/analyze", methods=['POST'])
@@ -82,6 +109,9 @@ def analyze():
     files = db.select(query)
 
     modules = request.get_json()
+    query = "update analyzes set status = ? where id = ?"
+    data = ('running', analyze_id)
+    db.update(query, data)
 
     for file in files:
         file_id = file['id']
@@ -127,18 +157,39 @@ def analyze_progress():
     analyze_id = analyze[0]['id']
 
     status = {}
+    AllFinished = True
 
     files = db.select(f"select * from files where analyze_id = {analyze_id}")
     for file in files:
         result_id = file['results_id']
-        results = db.select(f"select * from results where id = {result_id} and progress is not null")
+        results = db.select(f"select * from results where id = {result_id} and run_time is not null")
         if len(results) == 0:
+            AllFinished = False
             status[file['id']] = 'running'
         else:
             status[file['id']] = 'finished'
+
+    if AllFinished:
+        query = "update analyzes set status = ? where id = ?"
+        data = ('finished', analyze_id)
+        db.update(query, data)
 
     db.close()
     return {
         'msg': 'success',
         'progress': status
+    }
+
+@analyzeRoute.route("/cancel_analyze", methods=['POST'])
+def cancel_analyze():
+    db = con()
+    query = f"select * from analyzes order by id desc limit 1"
+    analyze = db.select(query)[0]
+    analyze_id = analyze['id']
+    query = f"update analyzes set status = ? where id = ?"
+    data = ('canceled', analyze_id)
+    db.update(query, data)
+    db.close()
+    return {
+        'msg': 'success',
     }

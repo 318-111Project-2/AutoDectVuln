@@ -1,5 +1,5 @@
 import logging
-import os, json
+import os
 
 from flask import Flask, render_template, redirect
 from app.configs.config import config
@@ -51,6 +51,14 @@ def create_app(config_name):
 
     # Initialize logging
     initialize_logging(app)
+
+    @app.after_request
+    def add_header(r):
+        r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        r.headers["Pragma"] = "no-cache"
+        r.headers["Expires"] = "0"
+        r.headers['Cache-Control'] = 'public, max-age=0'
+        return r
 
     @app.route("/")
     def home():

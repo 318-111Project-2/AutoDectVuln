@@ -1,0 +1,124 @@
+{% extends 'layouts/master.html' %}
+
+{% block title %}
+分析結果列表
+{% endblock %}
+
+{% block content %}
+<div class="text-base breadcrumbs">
+    <ul>
+        <li>
+            <a href="{{url_for('home')}}">
+                <p class="text-base font-medium mr-1.5">
+                    <i class="fa-solid fa-house"></i>
+                </p>
+                分析結果列表
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="flex flex-col gap-5 mb-5">
+    <div class="card w-100 bg-base-100 shadow-xl">
+        <div class="card-body">
+            <h1 class="card-title text-2xl mb-5">分析結果列表</h1>
+
+            {% if isnull %}
+            <div class="alert alert-info shadow-lg">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        class="stroke-current flex-shrink-0 w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>尚未有分析資料！</span>
+                </div>
+            </div>
+
+            {% else %}
+
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>分析時間</th>
+                            <th>狀態</th>
+                            <th>訊息</th>
+                            <th>報告</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for analyze in analyzes %}
+                        <tr>
+                            <td>{{ analyze['created'] }}</td>
+                            <td class="max-w-fit">
+                                {% if analyze['status'] == 'pending' %}
+                                <div class="alert alert-warning shadow-lg max-w-fit">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                        <span>未完成</span>
+                                    </div>
+                                </div>
+                                {% elif analyze['status'] == 'finished' %}
+                                <div class="alert alert-success shadow-lg max-w-fit">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>已完成</span>
+                                    </div>
+                                </div>
+                                {% elif analyze['status'] == 'error' %}
+                                <div class="alert alert-error shadow-lg max-w-fit">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>錯誤</span>
+                                    </div>
+                                </div>
+                                {% elif analyze['status'] == 'canceled' %}
+                                <div class="alert alert-info shadow-lg max-w-fit">
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            class="stroke-current flex-shrink-0 w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span>已取消</span>
+                                    </div>
+                                </div>
+                                {% else %}
+                                {{ analyze['status'] }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ analyze['message'] }}
+                            <td class="max-w-fit">
+                                {% if analyze['status'] == 'finished' %}
+                                <a class="btn btn-primary">查看</a>
+                                {% else %}
+                                無
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
