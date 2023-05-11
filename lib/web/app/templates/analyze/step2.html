@@ -29,7 +29,11 @@
             </ul>
             <div class="mt-1">
                 <p class="text-2xl font-semibold mb-5" id="stepTitle">
+                    {% if isRunning %}
+                    分析中
+                    {% else %}
                     選擇模組
+                    {% endif %}
                 </p>
                 <div id="stepContent">
                     <div class="overflow-x-auto">
@@ -61,7 +65,13 @@
                                         </select>
                                         {% endif %}
                                     </td>
-                                    <td class="status" target="{{ file['id'] }}">等待中...</td>
+                                    <td class="status" target="{{ file['id'] }}">
+                                        {%if isRunning %}
+                                        <button class="btn btn-info btn-sm loading">loading</button>
+                                        {% else %}
+                                        請選擇檔案
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {%endfor%}
                             </tbody>
@@ -86,8 +96,6 @@
 
         var isRunning = {% if isRunning %} true {% else %} false {% endif %};
 
-
-
     var files = $('tr[target]');
     var update_progress = () => {
         var check_progress = setInterval(() => {
@@ -97,26 +105,28 @@
                 success: function (data) {
                     var finishedFlag = true;
                     $.each(data.progress, function (index, value) {
-                        if (value == 'running')
-                            finishedFlag = false;
                         var status_td = $(`.status[target=${index}]`);
-                        console.log(status_td, index, status_td.text(), status_td.text() == '等待中...', value, value == 'finished')
-                        if (value == 'finished' && status_td.text() == '等待中...') {
-                            html = `<a href='/report/${index}' target='_blank' class="btn btn-success btn-sm">
-                                            <div class="mr-2">
-                                                <i class="fa-solid fa-download"></i>
-                                            </div>
-                                            download
-                                        </a>`
-                            status_td.html(html);
+                        if (value == 'running') {
+                            finishedFlag = false;
+                            html = `<button class="btn btn-info btn-sm loading">loading</button>`
+                            if (status_td.children().length == 0)
+                                status_td.html(html);
+                        } else if (value == 'finished') {
+                            html = `<button class="btn btn-success btn-sm no-animation">
+                                        分析完成
+                                    </button>`
+                            if (status_td.text() != html)
+                                status_td.html(html);
                         }
 
                     });
                     if (finishedFlag) {
                         clearInterval(check_progress);
-                        $('#analyzeBtn').text('分析完成');
-                        $('#analyzeBtn').parent().append(`<a class='btn lg:btn-wide btn-error text-lg' href='/'>
-                                離開
+                        var analyzeBtn = $('#analyzeBtn');
+                        analyzeBtn.text('全部分析完成');
+                        if (analyzeBtn.parent().children().length == 2)
+                            analyzeBtn.parent().append(`<a class='btn lg:btn-wide btn-error btn-outline text-lg' href='/reports'>
+                                前往觀看分析結果
                             </a > `);
                     }
                 },
@@ -125,13 +135,17 @@
     }
 
     if (isRunning) {
-        $('#analyzeBtn').prop('disabled', true);
-        $('#analyzeBtn').text('分析中...');
+        $('#stepTitle').text('分析中');
+        var analyzeBtn = $('#analyzeBtn');
+        analyzeBtn.prop('disabled', true);
+        analyzeBtn.addClass('no-animation');
+        analyzeBtn.text('分析中...');
         $('#cancelBtn').addClass('hidden');
         update_progress();
     }
 
     $('#analyzeBtn').on('click', function () {
+        $('#stepTitle').text('分析中');
         $('#analyzeBtn').prop('disabled', true);
         $('#analyzeBtn').text('分析中...');
         var selects = $('#stepContent select')
@@ -155,6 +169,7 @@
                     update_progress();
                 } else {
                     alert('分析失敗\n請重新上傳檔案');
+                    window.location.href = '/analyze';
                 }
             },
         });

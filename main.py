@@ -149,7 +149,7 @@ def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
     close_report_file()
     # ======================================================================================            
     
-    return VULN_DICT
+    return (VULN_DICT, total_time)
 
 if __name__=='__main__':
     # magic

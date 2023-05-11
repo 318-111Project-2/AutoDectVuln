@@ -21,7 +21,7 @@ def job(hash_name, file_name, module, file_id):
         'limit_time': 60,
         'file_id': file_id
     }
-    analyze_results = main_analyze(WEB_Data=WEB_Data)
+    analyze_results, total_time = main_analyze(WEB_Data=WEB_Data)
     os.remove(binary_file)
 
     db = con()
@@ -31,7 +31,7 @@ def job(hash_name, file_name, module, file_id):
     query = f"select * from results where id = {results_id}"
     result = db.select(query)[0]
     query = "update results set run_time = ? where id = ?"
-    data = ('50', results_id)
+    data = (total_time, results_id)
     db.update(query, data)
     for key, value in analyze_results.items():
         if value != 0:
@@ -69,6 +69,11 @@ def analyze_step2():
     if len(analyze) == 0:
         return redirect(url_for('home'))
     analyze = analyze[0]
+
+
+    if analyze['status'] == 'finished':
+        db.close()
+        return redirect(url_for('analyzeRoute.analyze_get'))
 
     isRunning = False
     if analyze['status'] == 'running':
