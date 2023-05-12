@@ -74,7 +74,11 @@
         $('#uploadBtn').on('click', function () {
             var files = $('#file').prop('files');
             if (files.length == 0) {
-                alert('請選擇檔案');
+                Swal.fire({
+                    icon: 'warning',
+                    title: '請選擇檔案',
+                    confirmButtonText: '確認',
+                })
                 return;
             }
             var names = $.map(files, function (val) { return val.name; });
@@ -92,10 +96,12 @@
                 success: function (data) {
                     if (data.msg == 'success') {
                         window.location.href = '/analyze/step2';
-                    } else if (data.msg == 'web_data not exist!') {
-                        window.location.href = '/';
                     } else {
-                        alert('檔案有誤，請重新選擇檔案');
+                        Swal.fire({
+                            icon: 'error',
+                            title: '檔案有誤，請重新選擇檔案',
+                            confirmButtonText: '確認',
+                        })
                     }
                 },
             });

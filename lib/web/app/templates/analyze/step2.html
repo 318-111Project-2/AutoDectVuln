@@ -170,8 +170,17 @@
                     $('#cancelBtn').addClass('hidden');
                     update_progress();
                 } else {
-                    alert('分析失敗\n請重新上傳檔案');
-                    window.location.href = '/analyze';
+                    Swal.fire({
+                        icon: 'error',
+                        title: '分析失敗\n請重新上傳檔案',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        confirmButtonText: '確認',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/analyze';
+                        } 
+                    })
                 }
             },
         });
@@ -186,7 +195,19 @@
             cache: false,
             processData: false,
             success: function (data) {
-                window.location.href = '/analyze';
+                Swal.fire({
+                    icon: 'question',
+                    title: '確定要取消，並回到上一步嗎？',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showCancelButton: true,
+                    confirmButtonText: '確認',
+                    cancelButtonText: '取消',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/analyze';
+                    } 
+                })
             },
         });
     });

@@ -29,9 +29,8 @@ def upload():
             kind = filetype.guess(file_path)
             if kind is None:
                 query = 'UPDATE analyzes SET status = ? , message = ? WHERE id = ?'
-                data = ('not executable file!', 'error', analyze_id)
+                data = ('error', '檔案格式不正確', analyze_id)
                 db.update(query, data)
-                print('Cannot guess file type!')
                 os.remove(file_path)
                 return {
                     'msg': 'not executable file!',
@@ -39,9 +38,8 @@ def upload():
             
             if not(kind.extension == 'elf' and kind.mime == 'application/x-executable'):
                 query = 'UPDATE analyzes SET status = ? , message = ? WHERE id = ?'
-                data = ('not executable file!', 'error', analyze_id)
+                data = ('error', '檔案格式不正確', analyze_id)
                 db.update(query, data)
-                print('not executable file!')
                 os.remove(file_path)
                 return {
                     'msg': 'not executable file!',

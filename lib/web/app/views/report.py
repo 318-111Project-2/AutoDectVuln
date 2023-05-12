@@ -2,7 +2,7 @@ import pathlib, os, json
 from datetime import datetime, timedelta
 from app.database.ConnectDB import ConnectDB as con
 
-from flask import Blueprint, send_file, redirect, url_for, render_template
+from flask import Blueprint, render_template
 
 reportRoute = Blueprint('reportRoute', __name__)
 
