@@ -29,10 +29,11 @@ def print_result(act: angr.sim_state.SimState) -> None:
     do_write(f'[*]{module_name} found in function: {func.name}\n')
     do_write(f'    === Process ===\n')
     for addr in act.history.bbl_addrs:
-        try:
-            do_write(f'    {cfg.kb.functions[addr].name}\n')
-        except:
-            pass
+        if addr not in act.globals['_sim_procedures']:
+            try:
+                do_write(f'    {cfg.kb.functions[addr].name}\n')
+            except:
+                pass
     do_write(f'    ===============\n\n')
 
 
@@ -137,6 +138,8 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=Fals
     # if you want to use cfg in other function, you need to add this line
     initial_state.globals['cfg']=cfg
 
+    # set global variable
+    initial_state.globals['_sim_procedures']=list(proj._sim_procedures.keys())
     initial_state.globals['func_block_addr']={}
     initial_state.globals['find_malloc_flag']=False
     initial_state.globals['malloc_addr']={}

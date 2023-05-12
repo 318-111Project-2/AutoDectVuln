@@ -26,10 +26,11 @@ def print_result(act: angr.sim_state.SimState) -> None:
     do_write(f'[*]format_string_bug found in function: {func.name}\n')
     do_write(f'    === Process ===\n')
     for addr in act.history.bbl_addrs:
-        try:
-            do_write(f'    {cfg.kb.functions[addr].name}\n')
-        except:
-            pass
+        if addr not in act.globals['_sim_procedures']:
+            try:
+                do_write(f'    {cfg.kb.functions[addr].name}\n')
+            except:
+                pass
     do_write(f'    ===============\n\n')
 
     VULN_DICT["FormatStringBug"] += 1
@@ -69,6 +70,8 @@ def FormatStringBug(proj: angr.project.Project) -> None:
             angr.options.SYMBOL_FILL_UNCONSTRAINED_REGISTERS
         }
     )
+
+    initial_state.globals['_sim_procedures']=list(proj._sim_procedures.keys())
     initial_state.globals['origin_str']={}
     initial_state.globals['func_block_addr']={}
     
