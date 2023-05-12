@@ -171,27 +171,28 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=Fals
                     block = act.project.factory.block(block_addr)
                     for insn_addr in block.instruction_addrs:
                         act.globals['func_block_addr'][insn_addr] = act.addr
+            
+                act.globals['find_malloc_flag'] = False
+                # print(func.name)
+                if func.name == 'malloc':
+
+                    # 避免檢查simprocedures
+                    block = act.project.factory.block(act.addr)
+                    if block.instructions <= 2:
+                        continue
+                    check_malloc(act)
+                    act.globals['find_malloc_flag'] = True
+                elif func.name == "free":
+
+                    # 避免檢查simprocedures
+                    block = act.project.factory.block(act.addr)
+                    if block.instructions > 2:
+                        continue
+                    check_free(act)
+                    act.globals['find_malloc_flag'] = True
+
             except:
                 pass
-            
-            act.globals['find_malloc_flag'] = False
-            # print(func.name)
-            if func.name == 'malloc':
-
-                # 避免檢查simprocedures
-                block = act.project.factory.block(act.addr)
-                if block.instructions <= 2:
-                    continue
-                check_malloc(act)
-                act.globals['find_malloc_flag'] = True
-            elif func.name == "free":
-
-                # 避免檢查simprocedures
-                block = act.project.factory.block(act.addr)
-                if block.instructions > 2:
-                    continue
-                check_free(act)
-                act.globals['find_malloc_flag'] = True
         simgr.step() 
 
 def HeapOverFlow(proj):
