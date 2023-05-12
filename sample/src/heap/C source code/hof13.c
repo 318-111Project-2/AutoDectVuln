@@ -1,5 +1,8 @@
 /* have 1 heap overflow */
 
+/* spend 16s */
+
+/* Link https://samate.nist.gov/SARD/test-cases/234264/versions/2.0.0 */
 
 
 
@@ -215,10 +218,11 @@ char** globalArgv = NULL;
 }
 #endif
 
+
 /* TEMPLATE GENERATED TESTCASE FILE
-Filename: CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12.c
+Filename: CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_10.c
 Label Definition File: CWE122_Heap_Based_Buffer_Overflow.label.xml
-Template File: point-flaw-12.tmpl.c
+Template File: point-flaw-10.tmpl.c
 */
 /*
  * @description
@@ -226,7 +230,7 @@ Template File: point-flaw-12.tmpl.c
  * Sinks: type_overrun_memmove
  *    GoodSink: Perform the memmove() and prevent overwriting part of the structure
  *    BadSink : Overwrite part of the structure by incorrectly using the sizeof(struct) in memmove()
- * Flow Variant: 12 Control flow: if(globalReturnsTrueOrFalse())
+ * Flow Variant: 10 Control flow: if(globalTrue) and if(globalFalse)
  *
  * */
 
@@ -247,9 +251,9 @@ typedef struct _charVoid
 
 #ifndef OMITBAD
 
-void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_bad()
+void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_10_bad()
 {
-    if(globalReturnsTrueOrFalse())
+    if(globalTrue)
     {
         {
             charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
@@ -264,44 +268,19 @@ void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_bad()
             printWLine((wchar_t *)structCharVoid->voidSecond);
         }
     }
-    /*else
-    {
-        {
-            charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
-            if (structCharVoid == NULL) {exit(-1);}
-            structCharVoid->voidSecond = (void *)SRC_STR;
-            /* Print the initial block pointed to by structCharVoid->voidSecond */
-            //printWLine((wchar_t *)structCharVoid->voidSecond);
-            /* FIX: Use the sizeof(structCharVoid->charFirst) to avoid overwriting the pointer y */
-           /*/ memmove(structCharVoid->charFirst, SRC_STR, sizeof(structCharVoid->charFirst));
-            structCharVoid->charFirst[(sizeof(structCharVoid->charFirst)/sizeof(wchar_t))-1] = L'\0'; /* null terminate the string */
-            //printWLine((wchar_t *)structCharVoid->charFirst);
-            //printWLine((wchar_t *)structCharVoid->voidSecond);
-        //}
-    //}
 }
 
 #endif /* OMITBAD */
 
 #ifndef OMITGOOD
 
-/* good1() uses the GoodSink on both sides of the "if" statement */
+/* good1() uses if(globalFalse) instead of if(globalTrue) */
 static void good1()
 {
-    if(globalReturnsTrueOrFalse())
+    if(globalFalse)
     {
-        {
-            charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
-            if (structCharVoid == NULL) {exit(-1);}
-            structCharVoid->voidSecond = (void *)SRC_STR;
-            /* Print the initial block pointed to by structCharVoid->voidSecond */
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-            /* FIX: Use the sizeof(structCharVoid->charFirst) to avoid overwriting the pointer y */
-            memmove(structCharVoid->charFirst, SRC_STR, sizeof(structCharVoid->charFirst));
-            structCharVoid->charFirst[(sizeof(structCharVoid->charFirst)/sizeof(wchar_t))-1] = L'\0'; /* null terminate the string */
-            printWLine((wchar_t *)structCharVoid->charFirst);
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-        }
+        /* INCIDENTAL: CWE 561 Dead Code, the code below will never run */
+        printLine("Benign, fixed string");
     }
     else
     {
@@ -320,9 +299,30 @@ static void good1()
     }
 }
 
-void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_good()
+/* good2() reverses the bodies in the if statement */
+static void good2()
+{
+    if(globalTrue)
+    {
+        {
+            charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
+            if (structCharVoid == NULL) {exit(-1);}
+            structCharVoid->voidSecond = (void *)SRC_STR;
+            /* Print the initial block pointed to by structCharVoid->voidSecond */
+            printWLine((wchar_t *)structCharVoid->voidSecond);
+            /* FIX: Use the sizeof(structCharVoid->charFirst) to avoid overwriting the pointer y */
+            memmove(structCharVoid->charFirst, SRC_STR, sizeof(structCharVoid->charFirst));
+            structCharVoid->charFirst[(sizeof(structCharVoid->charFirst)/sizeof(wchar_t))-1] = L'\0'; /* null terminate the string */
+            printWLine((wchar_t *)structCharVoid->charFirst);
+            printWLine((wchar_t *)structCharVoid->voidSecond);
+        }
+    }
+}
+
+void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_10_good()
 {
     good1();
+    good2();
 }
 
 #endif /* OMITGOOD */
@@ -332,18 +332,19 @@ void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_good()
    analysis tools. It is not used when compiling all the testcases as one
    application, which is how source code analysis tools are tested. */
 
+
 int main(int argc, char * argv[])
 {
     /* seed randomness */
     srand( (unsigned)time(NULL) );
 #ifndef OMITGOOD
     printLine("Calling good()...");
-    CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_good();
+    CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_10_good();
     printLine("Finished good()");
 #endif /* OMITGOOD */
 #ifndef OMITBAD
     printLine("Calling bad()...");
-    CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_bad();
+    CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_10_bad();
     printLine("Finished bad()");
 #endif /* OMITBAD */
     return 0;

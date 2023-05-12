@@ -1,5 +1,11 @@
 /* have 1 heap overflow */
 
+/* not found */
+
+/* spend 10s */
+
+/* Link https://samate.nist.gov/SARD/test-cases/234194/versions/2.0.0 */
+
 
 
 
@@ -181,7 +187,7 @@ int globalFive = 5;
 
 /* define a bunch of these as empty functions so that if a test case forgets
    to make their's statically scoped, we'll get a linker error */
-/*void good1() { }
+void good1() { }
 void good2() { }
 void good3() { }
 void good4() { }
@@ -216,121 +222,88 @@ char** globalArgv = NULL;
 #endif
 
 /* TEMPLATE GENERATED TESTCASE FILE
-Filename: CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12.c
-Label Definition File: CWE122_Heap_Based_Buffer_Overflow.label.xml
-Template File: point-flaw-12.tmpl.c
+Filename: CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34.c
+Label Definition File: CWE122_Heap_Based_Buffer_Overflow__sizeof.label.xml
+Template File: sources-sink-34.tmpl.c
 */
 /*
  * @description
  * CWE: 122 Heap Based Buffer Overflow
- * Sinks: type_overrun_memmove
- *    GoodSink: Perform the memmove() and prevent overwriting part of the structure
- *    BadSink : Overwrite part of the structure by incorrectly using the sizeof(struct) in memmove()
- * Flow Variant: 12 Control flow: if(globalReturnsTrueOrFalse())
+ * BadSource:  Initialize the source buffer using the size of a pointer
+ * GoodSource: Initialize the source buffer using the size of the DataElementType
+ * Sinks:
+ *    BadSink : Print then free data
+ * Flow Variant: 34 Data flow: use of a union containing two methods of accessing the same data (within the same function)
  *
  * */
 
 #include "std_testcase.h"
 
-#ifndef _WIN32
-#include <wchar.h>
-#endif
-
-#define SRC_STR L"0123456789abcdef0123456789abcde"
-
-typedef struct _charVoid
+typedef union
 {
-    wchar_t charFirst[16];
-    void * voidSecond;
-    void * voidThird;
-} charVoid;
+    int64_t * unionFirst;
+    int64_t * unionSecond;
+} CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34_unionType;
 
 #ifndef OMITBAD
 
-void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_bad()
+void CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34_bad()
 {
-    if(globalReturnsTrueOrFalse())
+    int64_t * data;
+    CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34_unionType myUnion;
+    /* Initialize data */
+    data = NULL;
+    /* INCIDENTAL: CWE-467 (Use of sizeof() on a pointer type) */
+    /* FLAW: Using sizeof the pointer and not the data type in malloc() */
+    data = (int64_t *)malloc(sizeof(data));
+    if (data == NULL) {exit(-1);}
+    *data = 2147483643LL;
+    myUnion.unionFirst = data;
     {
-        {
-            charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
-            if (structCharVoid == NULL) {exit(-1);}
-            structCharVoid->voidSecond = (void *)SRC_STR;
-            /* Print the initial block pointed to by structCharVoid->voidSecond */
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-            /* FLAW: Use the sizeof(*structCharVoid) which will overwrite the pointer y */
-            memmove(structCharVoid->charFirst, SRC_STR, sizeof(*structCharVoid));
-            structCharVoid->charFirst[(sizeof(structCharVoid->charFirst)/sizeof(wchar_t))-1] = L'\0'; /* null terminate the string */
-            printf((wchar_t *)structCharVoid->charFirst);
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-        }
+        int64_t * data = myUnion.unionSecond;
+        /* POTENTIAL FLAW: Attempt to use data, which may not have enough memory allocated */
+        printLongLongLine(*data);
+        free(data);
     }
-    /*else
-    {
-        {
-            charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
-            if (structCharVoid == NULL) {exit(-1);}
-            structCharVoid->voidSecond = (void *)SRC_STR;
-            /* Print the initial block pointed to by structCharVoid->voidSecond */
-            //printWLine((wchar_t *)structCharVoid->voidSecond);
-            /* FIX: Use the sizeof(structCharVoid->charFirst) to avoid overwriting the pointer y */
-           /*/ memmove(structCharVoid->charFirst, SRC_STR, sizeof(structCharVoid->charFirst));
-            structCharVoid->charFirst[(sizeof(structCharVoid->charFirst)/sizeof(wchar_t))-1] = L'\0'; /* null terminate the string */
-            //printWLine((wchar_t *)structCharVoid->charFirst);
-            //printWLine((wchar_t *)structCharVoid->voidSecond);
-        //}
-    //}
 }
 
 #endif /* OMITBAD */
 
 #ifndef OMITGOOD
 
-/* good1() uses the GoodSink on both sides of the "if" statement */
-static void good1()
+/* goodG2B() uses the GoodSource with the BadSink */
+static void goodG2B()
 {
-    if(globalReturnsTrueOrFalse())
+    int64_t * data;
+    CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34_unionType myUnion;
+    /* Initialize data */
+    data = NULL;
+    /* FIX: Using sizeof the data type in malloc() */
+    data = (int64_t *)malloc(sizeof(*data));
+    if (data == NULL) {exit(-1);}
+    *data = 2147483643LL;
+    myUnion.unionFirst = data;
     {
-        {
-            charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
-            if (structCharVoid == NULL) {exit(-1);}
-            structCharVoid->voidSecond = (void *)SRC_STR;
-            /* Print the initial block pointed to by structCharVoid->voidSecond */
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-            /* FIX: Use the sizeof(structCharVoid->charFirst) to avoid overwriting the pointer y */
-            memmove(structCharVoid->charFirst, SRC_STR, sizeof(structCharVoid->charFirst));
-            structCharVoid->charFirst[(sizeof(structCharVoid->charFirst)/sizeof(wchar_t))-1] = L'\0'; /* null terminate the string */
-            printWLine((wchar_t *)structCharVoid->charFirst);
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-        }
-    }
-    else
-    {
-        {
-            charVoid * structCharVoid = (charVoid *)malloc(sizeof(charVoid));
-            if (structCharVoid == NULL) {exit(-1);}
-            structCharVoid->voidSecond = (void *)SRC_STR;
-            /* Print the initial block pointed to by structCharVoid->voidSecond */
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-            /* FIX: Use the sizeof(structCharVoid->charFirst) to avoid overwriting the pointer y */
-            memmove(structCharVoid->charFirst, SRC_STR, sizeof(structCharVoid->charFirst));
-            structCharVoid->charFirst[(sizeof(structCharVoid->charFirst)/sizeof(wchar_t))-1] = L'\0'; /* null terminate the string */
-            printWLine((wchar_t *)structCharVoid->charFirst);
-            printWLine((wchar_t *)structCharVoid->voidSecond);
-        }
+        int64_t * data = myUnion.unionSecond;
+        /* POTENTIAL FLAW: Attempt to use data, which may not have enough memory allocated */
+        printLongLongLine(*data);
+        free(data);
     }
 }
 
-void CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_good()
+void CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34_good()
 {
-    good1();
+    goodG2B();
 }
 
 #endif /* OMITGOOD */
 
 /* Below is the main(). It is only used when building this testcase on
-   its own for testing or for building a binary to use in testing binary
-   analysis tools. It is not used when compiling all the testcases as one
-   application, which is how source code analysis tools are tested. */
+ * its own for testing or for building a binary to use in testing binary
+ * analysis tools. It is not used when compiling all the testcases as one
+ * application, which is how source code analysis tools are tested.
+ */
+
 
 int main(int argc, char * argv[])
 {
@@ -338,13 +311,14 @@ int main(int argc, char * argv[])
     srand( (unsigned)time(NULL) );
 #ifndef OMITGOOD
     printLine("Calling good()...");
-    CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_good();
+    CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34_good();
     printLine("Finished good()");
 #endif /* OMITGOOD */
 #ifndef OMITBAD
     printLine("Calling bad()...");
-    CWE122_Heap_Based_Buffer_Overflow__wchar_t_type_overrun_memmove_12_bad();
+    CWE122_Heap_Based_Buffer_Overflow__sizeof_int64_t_34_bad();
     printLine("Finished bad()");
 #endif /* OMITBAD */
     return 0;
 }
+
