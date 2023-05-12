@@ -155,6 +155,8 @@ def StackOverFlow(proj: angr.project.Project) -> None:
     simgr = proj.factory.simgr(initial_state)
     while simgr.active:
         for act in simgr.active:
+            info(f'I will check head and end. in {hex(act.addr)}')
+
             check_head(act)
             check_end(act)
         simgr.step()
