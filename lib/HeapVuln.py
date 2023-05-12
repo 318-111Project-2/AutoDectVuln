@@ -16,7 +16,10 @@ def print_result(act: angr.sim_state.SimState) -> None:
 
     ret_addr = act.callstack.ret_addr
     block=act.project.factory.block(ret_addr)
-    func_addr=act.globals['func_block_addr'][block.addr]
+    try:
+        func_addr=act.globals['func_block_addr'][block.addr]
+    except:
+        func_addr=act.globals['func_block_addr'][act.addr]
 
     # get function name
     cfg = act.globals['cfg']
@@ -162,33 +165,33 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=Fals
             try:
                 # print(act.addr)
                 func = cfg.kb.functions[act.addr]
-
-                # get function block address
-                block_addrs = list(func.block_addrs)
-                for block_addr in block_addrs:
-                    act.globals['func_block_addr'][block_addr] = act.addr
-
-                
-                act.globals['find_malloc_flag'] = False
-                # print(func.name)
-                if func.name == 'malloc':
-
-                    # 避免檢查simprocedures
-                    block = act.project.factory.block(act.addr)
-                    if block.instructions <= 2:
-                        continue
-                    check_malloc(act)
-                    act.globals['find_malloc_flag'] = True
-                elif func.name == "free":
-
-                    # 避免檢查simprocedures
-                    block = act.project.factory.block(act.addr)
-                    if block.instructions > 2:
-                        continue
-                    check_free(act)
-                    act.globals['find_malloc_flag'] = True
             except:
                 pass
+            # get function block address
+            block_addrs = list(func.block_addrs)
+            for block_addr in block_addrs:
+                block = act.project.factory.block(block_addr)
+                for insn_addr in block.instruction_addrs:
+                    act.globals['func_block_addr'][insn_addr] = act.addr
+            
+            act.globals['find_malloc_flag'] = False
+            # print(func.name)
+            if func.name == 'malloc':
+
+                # 避免檢查simprocedures
+                block = act.project.factory.block(act.addr)
+                if block.instructions <= 2:
+                    continue
+                check_malloc(act)
+                act.globals['find_malloc_flag'] = True
+            elif func.name == "free":
+
+                # 避免檢查simprocedures
+                block = act.project.factory.block(act.addr)
+                if block.instructions > 2:
+                    continue
+                check_free(act)
+                act.globals['find_malloc_flag'] = True
         simgr.step() 
 
 def HeapOverFlow(proj):

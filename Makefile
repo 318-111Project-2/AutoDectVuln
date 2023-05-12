@@ -11,6 +11,8 @@ make:
 	$(CC) sample/src/hof.c -o sample/build/hof $(CFLAGS_NP)
 	$(CC) sample/src/no_hof.c -o sample/build/no_hof $(CFLAGS_NP)
 	$(CC) sample/src/uaf.c -o sample/build/uaf $(CFLAGS_NP)
+	$(CC) sample/src/uaf2.c -o sample/build/uaf2 $(CFLAGS_NP)
+	$(CC) sample/src/uaf3.c -o sample/build/uaf3 $(CFLAGS_NP)
 	$(CC) sample/src/df.c -o sample/build/df $(CFLAGS_NP)
 
 sof:
@@ -35,6 +37,8 @@ uaf:
 	[ -d sample/build ] || mkdir -p sample/build
 
 	$(CC) sample/src/uaf.c -o sample/build/uaf $(CFLAGS_NP)
+	$(CC) sample/src/uaf2.c -o sample/build/uaf2 $(CFLAGS_NP)
+	$(CC) sample/src/uaf3.c -o sample/build/uaf3 $(CFLAGS_NP)
 
 df:
 	[ -d sample/build ] || mkdir -p sample/build
