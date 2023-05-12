@@ -165,14 +165,14 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=Fals
             try:
                 # print(act.addr)
                 func = cfg.kb.functions[act.addr]
+                # get function block address
+                block_addrs = list(func.block_addrs)
+                for block_addr in block_addrs:
+                    block = act.project.factory.block(block_addr)
+                    for insn_addr in block.instruction_addrs:
+                        act.globals['func_block_addr'][insn_addr] = act.addr
             except:
                 pass
-            # get function block address
-            block_addrs = list(func.block_addrs)
-            for block_addr in block_addrs:
-                block = act.project.factory.block(block_addr)
-                for insn_addr in block.instruction_addrs:
-                    act.globals['func_block_addr'][insn_addr] = act.addr
             
             act.globals['find_malloc_flag'] = False
             # print(func.name)
