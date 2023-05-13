@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS analyzes;
 DROP TABLE IF EXISTS files;
 DROP TABLE IF EXISTS results;
 DROP TABLE IF EXISTS vulns;
+DROP TABLE IF EXISTS process;
 
 create table analyzes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,8 +26,7 @@ create table results (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     analyze_id INTEGER NOT NULL,
     module TEXT NOT NULL,
-    run_time TEXT DEFAULT NULL,
-    progress text DEFAULT NULL
+    run_time TEXT DEFAULT NULL
 );
 
 create table vulns (
@@ -34,6 +34,13 @@ create table vulns (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     results_id INTEGER NOT NULL,
     vuln_name TEXT NOT NULL,
-    vuln_num TEXT NOT NULL,
+    vuln_num TEXT NOT NULL
+);
+
+create table process (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    vulns_id INTEGER NOT NULL,
+    process text NOT NULL,
     vuln_func TEXT DEFAULT NULL
-)
+);

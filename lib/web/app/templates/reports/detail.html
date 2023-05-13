@@ -189,34 +189,54 @@
         var analyze_datas = JSON.parse('{{ analyze_datas | tojson | safe}}')
 
         function format(i) {
-            data = analyze_datas.filter(function (item) {
+            var data = analyze_datas.filter(function (item) {
                 return item.id == i
             })[0]
+            if (data.vuln_name == '無') {
+                return '無資料'
+            }
+            var process = data['process'].split('=')
+            var vuln_func = data['vuln_func'].split('=')
+            var process_html = `<tr>
+                <td>
+                    <table class="table w-full">
+                        <tr>
+                            <th class="font-bold bg-gray-200/75">有漏洞的函式</td>
+                            <th class="font-bold bg-gray-200/75">分析過程</td>
+                        </tr>`
+            process.forEach(function (item, index) {
+                var class_name = ''
+                if (index % 2 != 0) {
+                    class_name = 'bg-gray-200/50'
+                }
+                process_html += `
+                            <tr>
+                                <td class="${class_name}">
+                                    ${vuln_func[index]}
+                                </td>
+                                <td class="${class_name}">
+                                    ${item}
+                                </td>
+                            </tr>`
+            })
+            process_html += `
+                    </table>
+                </td>
+            </tr>`
             html = `<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">
                     <tr>
-                        <td>分析模組:</td>
                         <td>
-                            ${data['module']}
+                            <p class="font-bold inline">分析模組:</p>
+                            <p class="ml-2 inline">${data['module']}</p>
                         </td>
                     </tr>
                     <tr>
-                        <td>執行時間:</td>
                         <td>
-                            ${data['run_time']} 秒
+                            <p class="font-bold inline">執行時間:</p>
+                            <p class="ml-2 inline">${data['run_time']} 秒</p>
                         </td>
                     </tr>
-                    <tr>
-                        <td>有漏洞的函式:</td>
-                        <td>
-                            ${data['run_time']}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>分析過程:</td>
-                        <td>
-                            ${data['progress']}
-                        </td>
-                    </tr>
+                    ${process_html}
                 </table>`
             return html
         }

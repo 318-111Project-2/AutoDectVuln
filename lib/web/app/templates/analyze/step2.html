@@ -69,7 +69,7 @@
                                     </td>
                                     <td class="status" target="{{ file['id'] }}">
                                         {%if isRunning %}
-                                        <button class="btn btn-info btn-sm loading">loading</button>
+                                        <button class="btn btn-info btn-sm loading">分析中</button>
                                         {% else %}
                                         請選擇檔案
                                         {% endif %}
@@ -99,18 +99,18 @@
         var isRunning = {% if isRunning %} true {% else %} false {% endif %};
 
     var files = $('tr[target]');
-    var update_progress = () => {
-        var check_progress = setInterval(() => {
+    var update_process = () => {
+        var check_process = setInterval(() => {
             $.ajax({
                 type: 'GET',
-                url: '/analyze_progress',
+                url: '/analyze_process',
                 success: function (data) {
                     var finishedFlag = true;
-                    $.each(data.progress, function (index, value) {
+                    $.each(data.process, function (index, value) {
                         var status_td = $(`.status[target=${index}]`);
                         if (value == 'running') {
                             finishedFlag = false;
-                            html = `<button class="btn btn-info btn-sm loading">loading</button>`
+                            html = `<button class="btn btn-info btn-sm loading">分析中</button>`
                             if (status_td.children().length == 0)
                                 status_td.html(html);
                         } else if (value == 'finished') {
@@ -123,9 +123,10 @@
 
                     });
                     if (finishedFlag) {
-                        clearInterval(check_progress);
+                        clearInterval(check_process);
                         var analyzeBtn = $('#analyzeBtn');
                         analyzeBtn.text('全部分析完成');
+                        $('#stepTitle').text('分析完成')
                         if (analyzeBtn.parent().children().length == 2)
                             analyzeBtn.parent().append(`<a class='btn lg:btn-wide btn-error btn-outline text-lg' href='/reports'>
                                 前往觀看分析結果
@@ -143,7 +144,7 @@
         analyzeBtn.addClass('no-animation');
         analyzeBtn.text('分析中...');
         $('#cancelBtn').addClass('hidden');
-        update_progress();
+        update_process();
     }
 
     $('#analyzeBtn').on('click', function () {
@@ -168,7 +169,7 @@
             success: function (data) {
                 if (data.msg == 'success') {
                     $('#cancelBtn').addClass('hidden');
-                    update_progress();
+                    update_process();
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -179,7 +180,7 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             window.location.href = '/analyze';
-                        } 
+                        }
                     })
                 }
             },
@@ -206,7 +207,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         window.location.href = '/analyze';
-                    } 
+                    }
                 })
             },
         });

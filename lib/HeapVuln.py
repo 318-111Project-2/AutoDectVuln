@@ -25,6 +25,7 @@ def print_result(act: angr.sim_state.SimState) -> None:
     cfg = act.globals['cfg']
     func = cfg.kb.functions[func_addr]
 
+    process_temp = []
     # do write to report file
     do_write(f'[*]{module_name} found in function: {func.name}\n')
     do_write(f'    === Process ===\n')
@@ -37,10 +38,15 @@ def print_result(act: angr.sim_state.SimState) -> None:
                 
                 if not before_main:
                     do_write(f'    {cfg.kb.functions[addr].name}\n')
+                    process_temp.append(cfg.kb.functions[addr].name)
             except:
                 pass
     do_write(f'    ===============\n\n')
-
+    data = {
+        'vuln_func': func.name,
+        'process': process_temp,
+    }
+    VULNS[act.globals['module']].append(data)
 
 def check_malloc(act):
     info(f'I will check malloc. in {hex(act.addr)}')

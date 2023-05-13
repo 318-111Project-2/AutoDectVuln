@@ -21,7 +21,8 @@ def job(hash_name, file_name, module, file_id):
         'limit_time': 60,
         'file_id': file_id
     }
-    analyze_results, total_time = main_analyze(WEB_Data=WEB_Data)
+    analyze_results, total_time, vulns = main_analyze(WEB_Data=WEB_Data)
+    
     os.remove(binary_file)
 
     db = con()
@@ -35,7 +36,12 @@ def job(hash_name, file_name, module, file_id):
     db.update(query, data)
     for key, value in analyze_results.items():
         if value != 0:
-            db.insert('vulns', ['results_id', 'vuln_name', 'vuln_num'], (results_id, key, value))
+            vulns_id = db.insert('vulns', ['results_id', 'vuln_name', 'vuln_num'], (results_id, key, value))
+            datas = vulns[key]
+            for data in datas:
+                vuln_func = data['vuln_func']
+                process = ' -> '.join(data['process'])
+                db.insert('process', ['vulns_id', 'vuln_func', 'process'], (vulns_id, vuln_func, process))
 
     db.close()
 
@@ -155,8 +161,8 @@ def analyze():
     }
 
 
-@analyzeRoute.route("/analyze_progress")
-def analyze_progress():
+@analyzeRoute.route("/analyze_process")
+def analyze_process():
     db = con()
     query = f"select * from analyzes order by id desc limit 1"
     analyze = db.select(query)
@@ -185,7 +191,7 @@ def analyze_progress():
     db.close()
     return {
         'msg': 'success',
-        'progress': status
+        'process': status
     }
 
 @analyzeRoute.route("/cancel_analyze", methods=['POST'])

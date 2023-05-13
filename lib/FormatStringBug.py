@@ -22,6 +22,7 @@ def print_result(act: angr.sim_state.SimState) -> None:
     print('========================================')
     '''
 
+    process_temp = []
     # do write to report file
     do_write(f'[*]format_string_bug found in function: {func.name}\n')
     do_write(f'    === Process ===\n')
@@ -34,9 +35,15 @@ def print_result(act: angr.sim_state.SimState) -> None:
                 
                 if not before_main:
                     do_write(f'    {cfg.kb.functions[addr].name}\n')
+                    process_temp.append(cfg.kb.functions[addr].name)
             except:
                 pass
     do_write(f'    ===============\n\n')
+    data = {
+        'vuln_func': func.name,
+        'process': process_temp,
+    }
+    VULNS[act.globals['module']].append(data)
 
     VULN_DICT["FormatStringBug"] += 1
    
@@ -76,6 +83,8 @@ def FormatStringBug(proj: angr.project.Project) -> None:
         }
     )
 
+    # set global variable
+    initial_state.globals['module']='FormatStringBug'
     initial_state.globals['_sim_procedures']=list(proj._sim_procedures.keys())
     initial_state.globals['origin_str']={}
     initial_state.globals['func_block_addr']={}

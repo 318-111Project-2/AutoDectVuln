@@ -9,6 +9,14 @@ VULN_DICT = {
     'DoubleFree': 0,
 }
 
+VULNS= {
+    'StackOverFlow': [],
+    'FormatStringBug': [],
+    'HeapOverFlow': [],
+    'UseAfterFree': [],
+    'DoubleFree': [],
+}
+
 def create_report_file(argv) :
     global REP_FILE
     pathlib.Path(argv.save).parent.mkdir(parents=True, exist_ok=True)

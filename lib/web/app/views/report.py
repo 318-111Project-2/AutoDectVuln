@@ -1,4 +1,4 @@
-import pathlib, zipfile, re, glob, os
+import pathlib, zipfile, re, glob, os, shutil
 from datetime import datetime, timedelta
 from app.database.ConnectDB import ConnectDB as con
 
@@ -33,7 +33,7 @@ def report_index():
 @reportRoute.route("/reports/<analyze_id>", methods=['GET'])
 def report_detail(analyze_id, isDownload=False):
     db = con()
-    query = f"select an.created, f.file_name, r.module, r.run_time, r.progress, v.vuln_name, v.vuln_num from ((analyzes as an inner join files as f on an.id = f.analyze_id) inner join results as r on r.id = f.results_id) left join vulns as v on v.results_id = r.id where an.id = {analyze_id} and an.status = 'finished'"
+    query = f"select an.created, f.file_name, r.module, r.run_time, v.vuln_name, v.vuln_num, v.id as vuln_id from ((analyzes as an inner join files as f on an.id = f.analyze_id) inner join results as r on r.id = f.results_id) left join vulns as v on v.results_id = r.id where an.id = {analyze_id} and an.status = 'finished'"
     datas = db.select(query)
     if len(datas) == 0:
         return {'msg': 'not found'}
@@ -46,15 +46,30 @@ def report_detail(analyze_id, isDownload=False):
     for data in datas:
         if data['vuln_name'] not in vulns_categorys and data['vuln_name'] != None:
             vulns_categorys[data['vuln_name']] = data['vuln_num']
+        if data['vuln_name'] != None:
+            query = f"select * from process where vulns_id = {data['vuln_id']}"
+            process = db.select(query)
+
+            vuln_func = ''
+            process_data = ''
+            for temp in process:
+                vuln_func = vuln_func + temp['vuln_func']
+                process_data = process_data + temp['process']
+                if temp != process[-1]:
+                    vuln_func = vuln_func + '='
+                    process_data = process_data + '='
+
+
         analyze_datas.append({
             'id': i,
             'created': datetime.strptime(data['created'], '%Y-%m-%d %H:%M:%S') + timedelta(hours=8),
             'file_name': data['file_name'],
             'module': data['module'],
             'run_time': data['run_time'],
-            'progress': data['progress'],
+            'process': process_data if process_data != '' else '無',
             'vuln_name': data['vuln_name'] if data['vuln_name'] != None else '無',
             'vuln_num': data['vuln_num'] if data['vuln_num'] != None else '無',
+            'vuln_func': vuln_func if vuln_func != '' else '無',
         })
         i=i+1
 
@@ -89,8 +104,8 @@ def report_detail(analyze_id, isDownload=False):
         
         open_file = open(f'temp/{file_name}.zip', 'rb')
 
-        if os.path.exists(f'temp/{file_name}.zip'):
-            os.remove(f'temp/{file_name}.zip')
+        if os.path.exists('temp'):
+            shutil.rmtree('temp')
 
         return send_file(open_file,
                         download_name=f"分析結果-{analyze_created}.zip",
