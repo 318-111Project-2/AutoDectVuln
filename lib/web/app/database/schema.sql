@@ -34,5 +34,6 @@ create table vulns (
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     results_id INTEGER NOT NULL,
     vuln_name TEXT NOT NULL,
-    vuln_num TEXT NOT NULL
+    vuln_num TEXT NOT NULL,
+    vuln_func TEXT DEFAULT NULL
 )

@@ -9,3 +9,4 @@ report*.txt
 **/*.log
 **/o/*
 **/database.db
+**/temp/*

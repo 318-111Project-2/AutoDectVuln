@@ -1,35 +1,247 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="bg-base-200" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>分析結果</title>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/fontawsome.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='css/daisyui.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ url_for('static', filename='js/tailwind.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/datatables.min.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+    <title>分析詳細結果</title>
 </head>
 
-<body>
-    {% for analyze_data in analyze_datas %}
-    <h1>{{ analyze_data['file_name'] }}</h1>
-    <p>
-        {{ analyze_data['created']}}
-    </p>
-    <p>
-        {{ analyze_data['module']}}
-    </p>
-    <p>
-        {{ analyze_data['run_time']}}
-    </p>
-    <p>
-        {{ analyze_data['progress']}}
-    </p>
-    <p>
-        {{ analyze_data['vuln_name']}}
-    </p>
-    <p>
-        {{ analyze_data['vuln_num']}}
-    </p>
-    {%endfor%}
+<body class="py-5">
+    <div class="container mx-auto px-8">
+        <div class="flex justify-center my-3">
+            <p class="text-4xl font-bold">
+                分析詳細結果
+            </p>
+        </div>
+        <p class="text-xl font-bold my-3 inline-block">
+            分析時間：{{analyze_created}}
+        </p>
+        {% if not isDownload %}
+        <a class="btn btn-sm btn-accent" id="export_pdf" target="_blank"
+            href="{{ url_for('reportRoute.report_download', analyze_id=analyze_id)}}">
+            匯出檔案
+        </a>
+        {% endif %}
+        <div class="flex justify-center my-3" style="height:500px">
+            <canvas id="summary_chart"></canvas>
+        </div>
+        <p class="text-2xl font-bold my-3">
+            漏洞分類統計表
+        </p>
+
+        <div class="card w-full bg-base-100 shadow-xl">
+            <div class="card-body p-2.5">
+                <table class="table w-full text-lg text-center" id="summary_table">
+                    <!-- head -->
+                    <thead>
+                        <tr>
+                            <th class="text-lg bg-gray-200 w-1/2">漏洞種類</th>
+                            <th class="text-lg bg-gray-200 w-1/2">數量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in vulns_categorys.items() %}
+                        <tr>
+                            <td class="text-left
+                            {% if loop.index is divisibleby 2 %}
+                            bg-gray-200
+                            {% endif %}
+                        ">{{ key }}</td>
+                            <td class="
+                            {% if loop.index is divisibleby 2 %}
+                            bg-gray-200
+                            {% endif %}
+                        ">{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p class="text-2xl font-bold my-3">
+            檔案分析結果
+        </p>
+
+        <div class="card w-full bg-base-100 shadow-xl">
+            <div class="card-body p-2.5">
+                <table class="table w-full text-lg" id="files_table">
+                    <!-- head -->
+                    <thead>
+                        <tr>
+                            <th class="max-w-fit bg-gray-200"></th>
+                            <th class="text-lg bg-gray-200">檔案名稱</th>
+                            <th class="text-lg bg-gray-200">漏洞名稱</th>
+                            <th class="text-lg bg-gray-200">數量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for analyze_data in analyze_datas %}
+                        <tr>
+                            <td class="max-w-fit">
+                                <button class="btn btn-accent btn-circle btn-sm details-control"
+                                    target="{{ analyze_data['id'] }}">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </td>
+                            <td>{{ analyze_data['file_name'] }}</td>
+                            <td>{{ analyze_data['vuln_name']}}</td>
+                            <td>{{ analyze_data['vuln_num']}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+    <script>
+        (function () {
+            let summary_chart = $('#summary_chart')
+
+            let data = {
+                labels: [
+                    {% for key, value in vulns_categorys.items() %}
+            '{{ key }}',
+                {% endfor %}
+            ],
+        datasets: [
+            {
+                data: [
+                    {% for key, value in vulns_categorys.items() %}
+                            {{ value }},
+            {% endfor %}
+        ],
+                }
+            ]
+        }
+
+        let ctx = new Chart(summary_chart, {
+            type: 'doughnut',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: false,
+                        text: '漏洞分類統計圖',
+                        font: {
+                            size: 20
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        },
+                    },
+                    tooltip: {
+                        displayColors: false,
+                        titleFont: {
+                            size: 16
+                        },
+                        bodyFont: {
+                            size: 16
+                        },
+                    }
+                },
+            },
+        })
+
+        BgColors = ctx.config._config.data.datasets[0].backgroundColor
+
+        BgColors.forEach(function (item, index) {
+            $('#summary_table tr:nth-child(' + (index + 1) + ') td:nth-child(1)').css('background-color', item)
+        })
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        var files_table = $('#files_table').DataTable({
+            "searching": false,
+            "paging": false,
+            "info": false,
+            "ordering": false,
+            "rowCallback": function (row, data, index) {
+                if (index % 2) {
+                    $('td', row).addClass('bg-gray-200');
+                }
+            }
+        });
+
+        var analyze_datas = JSON.parse('{{ analyze_datas | tojson | safe}}')
+
+        function format(i) {
+            data = analyze_datas.filter(function (item) {
+                return item.id == i
+            })[0]
+            html = `<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">
+                    <tr>
+                        <td>分析模組:</td>
+                        <td>
+                            ${data['module']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>執行時間:</td>
+                        <td>
+                            ${data['run_time']} 秒
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>有漏洞的函式:</td>
+                        <td>
+                            ${data['run_time']}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>分析過程:</td>
+                        <td>
+                            ${data['progress']}
+                        </td>
+                    </tr>
+                </table>`
+            return html
+        }
+
+        $('.details-control').on('click', function () {
+            let id = $(this).attr('target')
+            let tr = $(this).closest('tr')
+            let icon = $(this).find('i')
+            let row = files_table.row(tr)
+
+            if (row.child.isShown()) {
+                row.child.hide()
+                icon.removeClass('fa-minus')
+                icon.addClass('fa-plus')
+                tr.removeClass('shown')
+                $(this).html('<i class="fa-solid fa-plus"></i>')
+            } else {
+                icon.removeClass('fa-plus')
+                icon.addClass('fa-minus')
+                row.child(format(id)).show();
+                tr.addClass('shown');
+            }
+        })
+    }) ();
+    </script>
 </body>
 
 </html>
