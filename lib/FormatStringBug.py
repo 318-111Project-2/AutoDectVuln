@@ -25,10 +25,15 @@ def print_result(act: angr.sim_state.SimState) -> None:
     # do write to report file
     do_write(f'[*]format_string_bug found in function: {func.name}\n')
     do_write(f'    === Process ===\n')
+    before_main = True
     for addr in act.history.bbl_addrs:
         if addr not in act.globals['_sim_procedures']:
             try:
-                do_write(f'    {cfg.kb.functions[addr].name}\n')
+                if cfg.kb.functions[addr].name=='main':
+                    before_main = False
+                
+                if not before_main:
+                    do_write(f'    {cfg.kb.functions[addr].name}\n')
             except:
                 pass
     do_write(f'    ===============\n\n')
