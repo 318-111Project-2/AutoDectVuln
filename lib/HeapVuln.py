@@ -133,7 +133,10 @@ def HeapVuln(proj, isHeapOverFlow=False, isUseAfterFree=False, isDoubleFree=Fals
     initial_state = proj.factory.entry_state(
         add_options = { 
             angr.options.SYMBOL_FILL_UNCONSTRAINED_MEMORY,
-            angr.options.SYMBOL_FILL_UNCONSTRAINED_REGISTERS
+            angr.options.SYMBOL_FILL_UNCONSTRAINED_REGISTERS,
+            #angr.options.CONCRETIZE_SYMBOLIC_WRITE_SIZES,
+            angr.options.UNICORN,
+            angr.options.FAST_REGISTERS
         }
     )
 
