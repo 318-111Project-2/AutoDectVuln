@@ -46,8 +46,10 @@ def report_detail(analyze_id, isDownload=False):
     vuln_func = ''
     process_data = ''
     for data in datas:
-        if data['vuln_name'] not in vulns_categorys:
-            vulns_categorys[(data['vuln_name']) if data['vuln_name'] != None else '無'] = 0
+        if data['vuln_name'] not in vulns_categorys and data['vuln_name'] != None:
+            vulns_categorys[data['vuln_name']] = 0
+        elif '無' not in vulns_categorys and data['vuln_name'] == None:
+            vulns_categorys['無'] = 0
         if data['vuln_name'] != None:
             vulns_categorys[data['vuln_name']] += int(data['vuln_num'])
         else:
