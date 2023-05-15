@@ -23,7 +23,7 @@ def report_index():
                 'id': analyze['id'],
                 'created': created,
                 'status': analyze['status'],
-                'message': '無'if analyze['message'] == None else analyze['message'],
+                'message': '無' if analyze['message'] == None else analyze['message'],
             })
 
     db.close()
@@ -43,9 +43,15 @@ def report_detail(analyze_id, isDownload=False):
     analyze_datas = []
     analyze_created = datas[0]['created']
     i=0
+    vuln_func = ''
+    process_data = ''
     for data in datas:
-        if data['vuln_name'] not in vulns_categorys and data['vuln_name'] != None:
-            vulns_categorys[data['vuln_name']] = data['vuln_num']
+        if data['vuln_name'] not in vulns_categorys:
+            vulns_categorys[(data['vuln_name']) if data['vuln_name'] != None else '無'] = 0
+            if data['vuln_name'] != None:
+                vulns_categorys[data['vuln_name']] += int(data['vuln_num'])
+            else:
+                vulns_categorys['無'] += 1
         if data['vuln_name'] != None:
             query = f"select * from process where vulns_id = {data['vuln_id']}"
             process = db.select(query)
@@ -72,6 +78,10 @@ def report_detail(analyze_id, isDownload=False):
             'vuln_func': vuln_func if vuln_func != '' else '無',
         })
         i=i+1
+    
+    isAllNone = False
+    if len(vulns_categorys) == 1 and list(vulns_categorys.keys())[0] == '無':
+        isAllNone = True
 
     db.close()
 
@@ -81,7 +91,8 @@ def report_detail(analyze_id, isDownload=False):
                             analyze_datas=analyze_datas,
                             analyze_created=analyze_created,
                             vulns_categorys=vulns_categorys,
-                            isDownload=isDownload)
+                            isDownload=isDownload,
+                            isAllNone=isAllNone)
         
         html = re.sub(r'<script src="/', '<script src="', html)
         html = re.sub(r'<link href="/', '<link href="', html)
@@ -119,7 +130,8 @@ def report_detail(analyze_id, isDownload=False):
                             analyze_datas=analyze_datas,
                             analyze_created=analyze_created,
                             vulns_categorys=vulns_categorys,
-                            isDownload=isDownload)
+                            isDownload=isDownload,
+                            isAllNone=isAllNone)
 
 @reportRoute.route("/reports/<analyze_id>/download", methods=['GET'])
 def report_download(analyze_id):

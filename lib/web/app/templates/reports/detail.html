@@ -33,6 +33,7 @@
         <div class="flex justify-center my-3" style="height:500px">
             <canvas id="summary_chart"></canvas>
         </div>
+        {% if not isAllNone %}
         <p class="text-2xl font-bold my-3">
             漏洞分類統計表
         </p>
@@ -66,6 +67,7 @@
                 </table>
             </div>
         </div>
+        {% endif %}
 
         <p class="text-2xl font-bold my-3">
             檔案分析結果
@@ -121,6 +123,11 @@
                             {{ value }},
             {% endfor %}
         ],
+        {% if isAllNone %}
+        backgroundColor:[
+            '#8f8f8f'
+        ]
+        {% endif %}
                 }
             ]
         }
