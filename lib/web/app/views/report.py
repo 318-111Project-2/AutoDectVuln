@@ -48,10 +48,10 @@ def report_detail(analyze_id, isDownload=False):
     for data in datas:
         if data['vuln_name'] not in vulns_categorys:
             vulns_categorys[(data['vuln_name']) if data['vuln_name'] != None else '無'] = 0
-            if data['vuln_name'] != None:
-                vulns_categorys[data['vuln_name']] += int(data['vuln_num'])
-            else:
-                vulns_categorys['無'] += 1
+        if data['vuln_name'] != None:
+            vulns_categorys[data['vuln_name']] += int(data['vuln_num'])
+        else:
+            vulns_categorys['無'] += 1
         if data['vuln_name'] != None:
             query = f"select * from process where vulns_id = {data['vuln_id']}"
             process = db.select(query)
@@ -74,7 +74,7 @@ def report_detail(analyze_id, isDownload=False):
             'run_time': data['run_time'],
             'process': process_data if process_data != '' else '無',
             'vuln_name': data['vuln_name'] if data['vuln_name'] != None else '無',
-            'vuln_num': data['vuln_num'] if data['vuln_num'] != None else '無',
+            'vuln_num': data['vuln_num'] if data['vuln_num'] != None else '0',
             'vuln_func': vuln_func if vuln_func != '' else '無',
         })
         i=i+1

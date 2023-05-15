@@ -165,8 +165,13 @@
                 },
             },
         })
+        var labels = ctx.config._config.data.labels
+        console.log(labels)
+        let noneIndex = labels.indexOf('無');
+        ctx.config._config.data.datasets[0].backgroundColor[noneIndex] = '#8f8f8f';
 
         BgColors = ctx.config._config.data.datasets[0].backgroundColor
+        console.log(ctx.config._config.data.labels)
 
         BgColors.forEach(function (item, index) {
             $('#summary_table tr:nth-child(' + (index + 1) + ') td:nth-child(1)').css('background-color', item)
