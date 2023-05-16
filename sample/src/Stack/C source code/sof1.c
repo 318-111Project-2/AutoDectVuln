@@ -1,18 +1,13 @@
-/*PLOVER: BUFF.OVER*/
+/* have 2 stack overflow */
 
-/*
-Description: fgets is called with an incorrect bounds allow a stack buffer to be overrun.
-Keywords: Size0 Complex0 BufferOverflow Stack Gets BadBound
-ValidStream: "a"*30
-InvalidStream: "a"*200
-*/
+/* spend 77s */
+
 
 #include <stdio.h>
 #include <string.h>
 
 #define	MAXSIZE		40
-void
-test(void)
+void test(void)
 {
 	char buf[MAXSIZE];
 
@@ -20,11 +15,8 @@ test(void)
 		printf("result: %s\n", buf);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	test();
 	return 0;
 }
-
-/* have 2 stackoverflow */

@@ -1,10 +1,6 @@
-/*
-  PLOVER: BUFF.OVER
-*/
+/* have 2 stack overflow */
 
-/*
-	No bounds checking
-*/
+/* spend 43s */
 
 #include <stdio.h>
 #include <string.h>
@@ -18,11 +14,9 @@ void test(char *str){
 }
 
 int main(int argc, char **argv){
-	char *userstr;
-	userstr = argv[1];
+	char userstr[MAXSIZE];
+	scanf("%s", userstr);
 	test(userstr);
 	
 	return 0;
 }
-
-/* have 2 stackoverflow */

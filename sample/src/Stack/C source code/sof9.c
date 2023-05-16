@@ -1,9 +1,12 @@
-/*PLOVER: BUFF.OVER, NUM.OBO*/
+/* have 2 stack overflow */
+
+/* spend 33s */
 
 #include <stdio.h>
 #include <string.h>
 
 #define	MAXSIZE		40
+
 void test(char *str)
 {
 	char buf[MAXSIZE];
@@ -14,15 +17,10 @@ void test(char *str)
 	printf("result: %s\n", buf);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	char *userstr;
-
-	char a[MAXSIZE];
-    	scanf("%s",a);
-	test(a);
+	char userstr[MAXSIZE];
+    scanf("%s",userstr);
+	test(userstr);
 	return 0;
 }
-
-/* have 2 stackoverflow */

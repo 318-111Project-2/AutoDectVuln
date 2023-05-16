@@ -1,9 +1,7 @@
-/*
-  PLOVER: BUFF.OVER, NUM.OBO
-*/
-/*
-	Off-by-one
-*/
+/* have 1 stack overflow */
+
+/* spend 21s */
+
 
 #include <stdio.h>
 #include <string.h>
@@ -17,11 +15,8 @@ void test(char *str){
 }
 
 int main(int argc, char **argv){
-	char *userstr;
-    	char a[MAXSIZE];
-    	scanf("%s",a);
+	char userstr[MAXSIZE];
+	scanf("%s",userstr);
 	test(userstr);
 	return 0;
 }
-
-/* have 1 stackoverflow */

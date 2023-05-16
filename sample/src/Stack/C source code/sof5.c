@@ -1,11 +1,7 @@
-/*PLOVER: BUFF.OVER, BUFF.LENCALC */
+/* have 2 stack overflows */
 
-/*
-Description: snprintf with incorrect bounds allows a stack buffer to be overrun.
-Keywords: Size0 Complex0 BufferOverflow Stack Sprintf BadBound
-ValidArg: "a"*30
-InvalidArg: "a"*100
-*/
+/* spend 10s */
+
 
 #include <stdio.h>
 #include <string.h>
@@ -26,11 +22,5 @@ main(int argc, char **argv)
 	char *userstr;
 	userstr = argv[1];
 	test(userstr);
-	if(argc > 1) {
-		userstr = argv[1];
-		test(userstr);
-	}
 	return 0;
 }
-
-/* have 3 stackoverflows */

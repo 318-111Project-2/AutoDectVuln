@@ -1,10 +1,6 @@
-/*PLOVER: BUFF.OVER, BUF.LENCALC*/
+/* have 2 stack overflow */
 
-/*
-Description: snprintf with incorrect bounds allows a stack buffer to be overrun.
-Keywords: Size0 Complex0 BufferOverflow Stack Sprintf BadBound
-InvalidArg: ""
-*/
+/* spend 16s */
 
 #include <stdio.h>
 #include <string.h>
@@ -24,9 +20,7 @@ main(int argc, char **argv)
 {
 	/* overly long constant string */
 	char a[40];
-    	scanf("%s",a);
+    scanf("%s",a);
 	test(a);
 	return 0;
 }
-
-/* have 2 stackoverflow */

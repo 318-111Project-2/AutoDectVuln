@@ -1,42 +1,27 @@
-/*PLOVER: BUFF.OVER, BUFF.FORMAT*/
+/* have 2 stack overflow*/
 
-/*
-Description: A strcpy of a buffer with a missing NUL character causes a stack buffer to overflow.
-Keywords: Size0 Complex0 BufferOverflow Stack Strcpy NoNul
-ValidStream: "a"*20
-InvalidStream: "a"*100
-*/
+/* spen 10s */
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
-/* 
- * we pick a round buffer size in hopes that the compiler lays these
- * out next to each other without padding.  Other layouts may
- * inadvertantly NUL terminate the buffer with stack garbage.
- */
-#define	MAXSIZE		32
-
-void
-test(void)
+#define	MAXSIZE		40
+void test(char *str)
 {
-	char buf2[MAXSIZE];
-	char buf1[MAXSIZE];
-	int n;
+	char buf[MAXSIZE];
 
-	/* read does not NUL terminate */
-	n = read(0, buf1, sizeof buf1);
-	strcpy(buf2, buf1);				/* BAD */
-	printf("result: %s\n", buf2);
+	/* this is a failed attempt at fixing the bug 
+	 * %35s does not limit the output length to 35
+	 */
+	snprintf(buf, 1024, "<%35s>", str);	/* BAD */
+	printf("result: %s\n", buf);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-	test();
+	char *userstr;
+	userstr = argv[1];
+	test(userstr);
 	return 0;
 }
-
-/* have 2 stackoverflow */
 
