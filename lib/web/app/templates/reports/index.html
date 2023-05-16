@@ -24,7 +24,7 @@
 </div>
 <div class="flex flex-col gap-5 mb-5">
     <div class="card w-100 bg-base-100 shadow-xl">
-        <div class="card-body">
+        <div class="card-body p-5">
             <h1 class="card-title text-2xl mb-5">分析結果列表</h1>
 
             {% if isnull %}
@@ -45,6 +45,8 @@
                 <table class="table table-zebra w-full">
                     <thead>
                         <tr>
+                            <th>名稱</th>
+                            <th>檔案</th>
                             <th>時間</th>
                             <th>狀態</th>
                             <th>訊息</th>
@@ -54,7 +56,9 @@
                     <tbody>
                         {% for analyze in analyzes %}
                         <tr>
-                            <td>{{ analyze['created'] }}</td>
+                            <td class="max-w-fit">{{ analyze['name'] }}</td>
+                            <td class="max-w-fit">{{ analyze['files_name'] }}</td>
+                            <td class="max-w-fit">{{ analyze['created'] }}</td>
                             <td class="max-w-fit">
                                 {% if analyze['status'] == 'pending' %}
                                 <div class="alert alert-warning shadow-lg max-w-fit">

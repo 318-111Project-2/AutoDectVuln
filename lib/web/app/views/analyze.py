@@ -1,6 +1,4 @@
-import os
-import time
-import pathlib
+import os, shutil, time, pathlib
 import multiprocessing as mp
 from app.database.ConnectDB import ConnectDB as con
 
@@ -47,6 +45,9 @@ def job(hash_name, file_name, module, file_id):
 
 @analyzeRoute.route("/analyze", methods=['GET'])
 def analyze_get():
+    if os.path.exists('report'):
+        shutil.rmtree('report')
+
     db = con()
     query = f"select * from analyzes order by id desc limit 1"
     analyze = db.select(query)
@@ -89,6 +90,7 @@ def analyze_step2():
         isRunning = True
     
     analyze_id = analyze['id']
+    analyze_name = analyze['name']
 
     query = f"select * from files where analyze_id = {analyze_id}"
     files = db.select(query)
@@ -107,7 +109,7 @@ def analyze_step2():
 
     db.close()
     
-    return render_template('analyze/step2.html', sidebar='analyze', files=files_dict, isRunning=isRunning)
+    return render_template('analyze/step2.html', sidebar='analyze', files=files_dict, isRunning=isRunning, analyze_name=analyze_name)
 
 
 @analyzeRoute.route("/analyze", methods=['POST'])
@@ -191,7 +193,8 @@ def analyze_process():
     db.close()
     return {
         'msg': 'success',
-        'process': status
+        'process': status,
+        'analyze_id': analyze_id,
     }
 
 @analyzeRoute.route("/cancel_analyze", methods=['POST'])

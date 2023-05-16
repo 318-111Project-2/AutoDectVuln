@@ -30,11 +30,17 @@
                 <li class="step step-primary">第二步</li>
             </ul>
             <div class="mt-1">
-                <p class="text-2xl font-semibold mb-5" id="stepTitle">
+                <p class="text-xl font-semibold mb-5">
+                    名稱:
+                    <span class="font-normal">
+                        {{ analyze_name }}
+                    </span>
+                </p>
+                <p class="text-lg font-semibold mb-5" id="stepTitle">
                     {% if isRunning %}
                     分析中
                     {% else %}
-                    選擇模組
+                    請選擇模組
                     {% endif %}
                 </p>
                 <div id="stepContent">
@@ -71,7 +77,7 @@
                                         {%if isRunning %}
                                         <button class="btn btn-info btn-sm loading">分析中</button>
                                         {% else %}
-                                        請選擇檔案
+                                        請選擇模組
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -96,18 +102,18 @@
 <script>
     (function () {
 
-        var isRunning = {% if isRunning %} true {% else %} false {% endif %};
+        let isRunning = {% if isRunning %} true {% else %} false {% endif %};
 
-    var files = $('tr[target]');
-    var update_process = () => {
-        var check_process = setInterval(() => {
+    let files = $('tr[target]');
+    let update_process = () => {
+        let check_process = setInterval(() => {
             $.ajax({
                 type: 'GET',
                 url: '/analyze_process',
                 success: function (data) {
-                    var finishedFlag = true;
+                    let finishedFlag = true;
                     $.each(data.process, function (index, value) {
-                        var status_td = $(`.status[target=${index}]`);
+                        let status_td = $(`.status[target=${index}]`);
                         if (value == 'running') {
                             finishedFlag = false;
                             html = `<button class="btn btn-info btn-sm loading">分析中</button>`
@@ -124,22 +130,25 @@
                     });
                     if (finishedFlag) {
                         clearInterval(check_process);
-                        var analyzeBtn = $('#analyzeBtn');
+                        let analyzeBtn = $('#analyzeBtn');
                         analyzeBtn.text('全部分析完成');
                         $('#stepTitle').text('分析完成')
                         if (analyzeBtn.parent().children().length == 2)
                             analyzeBtn.parent().append(`<a class='btn lg:btn-wide btn-error btn-outline text-lg' href='/reports'>
                                 前往觀看分析結果
                             </a > `);
+                        //analyzeBtn.parent().append(`<a class='btn lg:btn-wide btn-error btn-outline text-lg' href='/reports/${data.analyze_id}'>
+                        //前往觀看分析結果
+                        //</a > `);
                     }
                 },
             });
-        }, 250);
+        }, 350);
     }
 
     if (isRunning) {
         $('#stepTitle').text('分析中');
-        var analyzeBtn = $('#analyzeBtn');
+        let analyzeBtn = $('#analyzeBtn');
         analyzeBtn.prop('disabled', true);
         analyzeBtn.addClass('no-animation');
         analyzeBtn.text('分析中...');
@@ -151,11 +160,11 @@
         $('#stepTitle').text('分析中');
         $('#analyzeBtn').prop('disabled', true);
         $('#analyzeBtn').text('分析中...');
-        var selects = $('#stepContent select')
-        var data = {};
+        let selects = $('#stepContent select')
+        let data = {};
         files.each((index, element) => {
-            var file_id = $(element).attr('target');
-            var select = $(`select[target=${file_id}]`);
+            let file_id = $(element).attr('target');
+            let select = $(`select[target = ${file_id}]`);
             data[file_id] = select.val();
             select.parent().html(data[file_id]);
         });

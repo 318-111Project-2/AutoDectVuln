@@ -8,6 +8,7 @@ create table analyzes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status text NOT NULL DEFAULT 'pending',
+    name text NOT NULL,
     message text DEFAULT NULL
 );
 

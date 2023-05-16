@@ -21,6 +21,9 @@
                 分析詳細結果
             </p>
         </div>
+        <p class="text-2xl font-bold my-3">
+            名稱：{{analyze_name}}
+        </p>
         <p class="text-xl font-bold my-3 inline-block">
             分析時間：{{analyze_created}}
         </p>
@@ -123,8 +126,8 @@
                             {{ value }},
             {% endfor %}
         ],
-        {% if isAllNone %}
-        backgroundColor:[
+            {% if isAllNone %}
+        backgroundColor: [
             '#8f8f8f'
         ]
         {% endif %}
@@ -165,10 +168,11 @@
                 },
             },
         })
-        var labels = ctx.config._config.data.labels
-        console.log(labels)
+        let labels = ctx.config._config.data.labels
         let noneIndex = labels.indexOf('無');
-        ctx.config._config.data.datasets[0].backgroundColor[noneIndex] = '#8f8f8f';
+        if (noneIndex != -1) {
+            ctx.config._config.data.datasets[0].backgroundColor[noneIndex] = '#8f8f8f';
+        }
 
         BgColors = ctx.config._config.data.datasets[0].backgroundColor
         console.log(ctx.config._config.data.labels)
@@ -177,16 +181,7 @@
             $('#summary_table tr:nth-child(' + (index + 1) + ') td:nth-child(1)').css('background-color', item)
         })
 
-        function getRandomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        var files_table = $('#files_table').DataTable({
+        let files_table = $('#files_table').DataTable({
             "searching": false,
             "paging": false,
             "info": false,
@@ -198,18 +193,18 @@
             }
         });
 
-        var analyze_datas = JSON.parse('{{ analyze_datas | tojson | safe}}')
+        let analyze_datas = JSON.parse('{{ analyze_datas | tojson | safe}}')
 
         function format(i) {
-            var data = analyze_datas.filter(function (item) {
+            let data = analyze_datas.filter(function (item) {
                 return item.id == i
             })[0]
             if (data.vuln_name == '無') {
                 return '無資料'
             }
-            var process = data['process'].split('=')
-            var vuln_func = data['vuln_func'].split('=')
-            var process_html = `<tr>
+            let process = data['process'].split('=')
+            let vuln_func = data['vuln_func'].split('=')
+            let process_html = `<tr>
                 <td>
                     <table class="table w-full">
                         <tr>
@@ -217,7 +212,7 @@
                             <th class="font-bold bg-gray-200/75">分析過程</td>
                         </tr>`
             process.forEach(function (item, index) {
-                var class_name = ''
+                let class_name = ''
                 if (index % 2 != 0) {
                     class_name = 'bg-gray-200/50'
                 }

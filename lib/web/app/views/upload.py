@@ -15,9 +15,11 @@ def upload():
     else:
         shutil.rmtree('uploads')
     db = con()
-    analyze_id = db.insert('analyzes', ['status'], ('pending',))
 
     files = request.files.getlist('file')
+    name = files[0].filename if request.form.get('name') == '' else request.form.get('name')
+    analyze_id = db.insert('analyzes', ['status', 'name'], ('pending', name))
+    
     for file in files:
         if file:
             filename = secure_filename(file.filename)

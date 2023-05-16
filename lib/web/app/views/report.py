@@ -17,11 +17,28 @@ def report_index():
         isnull = True
     else:
         for analyze in analyzes:
+            query = f"select * from files where analyze_id = {analyze['id']}"
+            files = db.select(query)
+            files_name = ''
+            for file in files:
+                files_name = files_name + file['file_name']
+                if file != files[-1]:
+                    files_name = files_name + ', '
+                if len(files_name) > 8:
+                    files_name = files_name[:8] + '...'
+                    break
+
+            analyze_name = analyze['name']
+            if len(analyze_name) > 10:
+                analyze_name = analyze_name[:10] + '...'
+
             created = datetime.strptime(analyze['created'], '%Y-%m-%d %H:%M:%S') + timedelta(hours=8)
-            
+            created = created.strftime('%Y-%m-%d %H:%M')
             list_analyzes.append({
                 'id': analyze['id'],
+                'name': analyze_name,
                 'created': created,
+                'files_name': files_name,
                 'status': analyze['status'],
                 'message': '無' if analyze['message'] == None else analyze['message'],
             })
@@ -33,13 +50,14 @@ def report_index():
 @reportRoute.route("/reports/<analyze_id>", methods=['GET'])
 def report_detail(analyze_id, isDownload=False):
     db = con()
-    query = f"select an.created, f.file_name, r.module, r.run_time, v.vuln_name, v.vuln_num, v.id as vuln_id from ((analyzes as an inner join files as f on an.id = f.analyze_id) inner join results as r on r.id = f.results_id) left join vulns as v on v.results_id = r.id where an.id = {analyze_id} and an.status = 'finished'"
+    query = f"select an.name, an.created, f.file_name, r.module, r.run_time, v.vuln_name, v.vuln_num, v.id as vuln_id from ((analyzes as an inner join files as f on an.id = f.analyze_id) inner join results as r on r.id = f.results_id) left join vulns as v on v.results_id = r.id where an.id = {analyze_id} and an.status = 'finished'"
     datas = db.select(query)
     if len(datas) == 0:
         return {'msg': 'not found'}
     
     vulns_categorys = {}
 
+    analyze_name = datas[0]['name']
     analyze_datas = []
     analyze_created = datas[0]['created']
     i=0
@@ -94,7 +112,8 @@ def report_detail(analyze_id, isDownload=False):
                             analyze_created=analyze_created,
                             vulns_categorys=vulns_categorys,
                             isDownload=isDownload,
-                            isAllNone=isAllNone)
+                            isAllNone=isAllNone,
+                            analyze_name=analyze_name)
         
         html = re.sub(r'<script src="/', '<script src="', html)
         html = re.sub(r'<link href="/', '<link href="', html)
@@ -133,7 +152,8 @@ def report_detail(analyze_id, isDownload=False):
                             analyze_created=analyze_created,
                             vulns_categorys=vulns_categorys,
                             isDownload=isDownload,
-                            isAllNone=isAllNone)
+                            isAllNone=isAllNone,
+                            analyze_name=analyze_name)
 
 @reportRoute.route("/reports/<analyze_id>/download", methods=['GET'])
 def report_download(analyze_id):
