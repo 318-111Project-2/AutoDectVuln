@@ -1,9 +1,6 @@
 /*  have 6 format string bug */
-/* have 8 stack over flow */
 
-/* spend 1min 43s */
-
-/* 會因為自訂函式導致找不到 format string bug 但會檢測到 stack over flow */
+/* spend 2min 20s */
 
 /* Link https://samate.nist.gov/SARD/test-cases/235309/versions/2.0.0 */
 

@@ -1,6 +1,6 @@
-/* have 3 format string bugs*/
+/* have 2 format string bugs*/
 
-/* spend 57s*/
+/* spend 83s*/
 
 /* Link https://samate.nist.gov/SARD/test-cases/235165/versions/2.0.0#1*/
 
