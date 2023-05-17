@@ -2,7 +2,7 @@ from pwn import *
 import angr
 from lib.Tool import *
 
-def print_result(act: angr.sim_state.SimState) -> None:
+def print_result(act) -> None:
     ret_addr = act.callstack.ret_addr
     func_addr = act.globals['func_addr_list'][ret_addr]
 
@@ -51,7 +51,7 @@ def print_result(act: angr.sim_state.SimState) -> None:
     VULN_DICT["StackOverFlow"] += 1
     
 # check if exist stack canary
-def check_canary(act: angr.sim_state.SimState) -> bool:
+def check_canary(act) -> bool:
     try:
         has_canary = act.solver.symbolic(proj.loader.main_object.get_symbol('___stack_chk_fail').rebased_addr) != 0
     except:
@@ -59,7 +59,7 @@ def check_canary(act: angr.sim_state.SimState) -> bool:
     return True
 
 # check the head of basic block
-def check_head(act: angr.sim_state.SimState) -> None:
+def check_head(act) -> None:
     block = act.project.factory.block(act.addr)
     insns = block.capstone.insns
 
@@ -90,7 +90,7 @@ def check_head(act: angr.sim_state.SimState) -> None:
     # print("Found head")
 
 # check the end of basic block
-def check_end(act: angr.sim_state.SimState) -> None:
+def check_end(act) -> None:
     block = act.project.factory.block(act.addr)
     insns = block.capstone.insns
 
@@ -149,7 +149,7 @@ def check_end(act: angr.sim_state.SimState) -> None:
         print_result(act)
 
         
-def StackOverFlow(proj: angr.project.Project) -> None:
+def StackOverFlow(proj) -> None:
     # binary process
     initial_state = proj.factory.entry_state(
         add_options = { 

@@ -17,7 +17,7 @@ from lib.Tool import *
     usage: main.py [-h] [-s SAVE] [-m MODULE [MODULE ...]] [-t LIMIT_TIME] proj
     main.py: error: the following arguments are required: proj
 '''
-def get_argv() -> argparse.Namespace:
+def get_argv():
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('proj', type=str, help="binary path")
     parser.add_argument('-s', '--save', type=str, default='report/report.txt', help="report file path")
@@ -29,7 +29,7 @@ def get_argv() -> argparse.Namespace:
 '''
     load the binary file
 '''
-def load(file_path: str) -> angr.project.Project:
+def load(file_path: str):
     proj = angr.Project(file_path, auto_load_libs=False)
     #proj = angr.Project(file_path, auto_load_lib=True)
     return proj
@@ -84,7 +84,7 @@ class Web_Control:
 '''
     main
 '''
-def main(argv: argparse.Namespace=None, WEB_Data=False) -> None:
+def main(argv=None, WEB_Data=False) -> None:
 
     # ================================== initialize =========================================
     if WEB_Data:

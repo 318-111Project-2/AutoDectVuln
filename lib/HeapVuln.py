@@ -2,7 +2,7 @@ import angr
 from pwn import *
 from lib.Tool import *
 
-def print_result(act: angr.sim_state.SimState) -> None:
+def print_result(act) -> None:
     # get module name and add vuln count
     module_name = "heap_over_flow"
     if act.globals['module'] == 'HeapOverFlow':

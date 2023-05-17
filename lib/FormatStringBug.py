@@ -2,7 +2,7 @@ import angr
 from pwn import *
 from lib.Tool import *
 
-def print_result(act: angr.sim_state.SimState) -> None:
+def print_result(act) -> None:
     ret_addr = act.callstack.ret_addr
     block=act.project.factory.block(ret_addr)
     func_addr=act.globals['func_block_addr'][block.addr]
@@ -46,8 +46,8 @@ def print_result(act: angr.sim_state.SimState) -> None:
     VULNS[act.globals['module']].append(data)
 
     VULN_DICT["FormatStringBug"] += 1
-   
-def check_printf(act: angr.sim_state.SimState) -> None:
+
+def check_printf(act) -> None:
     info(f'I will check printf. in {hex(act.addr)}')
     
     # get first parameter address of printf
@@ -74,7 +74,7 @@ def check_printf(act: angr.sim_state.SimState) -> None:
         print_result(act)
         return
 
-def FormatStringBug(proj: angr.project.Project) -> None:
+def FormatStringBug(proj) -> None:
     # binary process
     initial_state = proj.factory.entry_state(
         add_options = { 
