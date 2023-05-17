@@ -1,4 +1,4 @@
-/* have 2 use after free */
+/* have 1 use after free */
 
 /* not found*/
 
