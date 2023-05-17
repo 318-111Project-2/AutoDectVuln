@@ -1,4 +1,4 @@
-/* have 2 format string bugs*/
+/* have 3 format string bugs*/
 
 /* spend 83s*/
 
