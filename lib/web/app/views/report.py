@@ -63,6 +63,7 @@ def report_detail(analyze_id, isDownload=False):
     i=0
     vuln_func = ''
     process_data = ''
+    vuln_informations = {}
     for data in datas:
         if data['vuln_name'] not in vulns_categorys and data['vuln_name'] != None:
             vulns_categorys[data['vuln_name']] = 0
@@ -72,6 +73,15 @@ def report_detail(analyze_id, isDownload=False):
             vulns_categorys[data['vuln_name']] += int(data['vuln_num'])
         else:
             vulns_categorys['無'] += 1
+        if data['vuln_name'] != None and data['vuln_name'] not in vuln_informations:
+            query = f"select * from information where name = '{data['vuln_name']}'"
+            information = db.select(query)[0]
+            vuln_informations[data['vuln_name']] = {
+                'name': data['vuln_name'],
+                'message': information['message'],
+            }
+
+        print(vuln_informations)
         if data['vuln_name'] != None:
             query = f"select * from process where vulns_id = {data['vuln_id']}"
             process = db.select(query)
@@ -113,7 +123,8 @@ def report_detail(analyze_id, isDownload=False):
                             vulns_categorys=vulns_categorys,
                             isDownload=isDownload,
                             isAllNone=isAllNone,
-                            analyze_name=analyze_name)
+                            analyze_name=analyze_name,
+                            vuln_informations=vuln_informations)
         
         html = re.sub(r'<script src="/', '<script src="', html)
         html = re.sub(r'<link href="/', '<link href="', html)
@@ -153,7 +164,8 @@ def report_detail(analyze_id, isDownload=False):
                             vulns_categorys=vulns_categorys,
                             isDownload=isDownload,
                             isAllNone=isAllNone,
-                            analyze_name=analyze_name)
+                            analyze_name=analyze_name,
+                            vuln_informations=vuln_informations)
 
 @reportRoute.route("/reports/<analyze_id>/download", methods=['GET'])
 def report_download(analyze_id):

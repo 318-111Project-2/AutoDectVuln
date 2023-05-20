@@ -106,6 +106,32 @@
                 </table>
             </div>
         </div>
+
+        <p class="text-2xl font-bold my-3">
+            漏洞相關資訊
+        </p>
+
+        <div class="card w-full bg-base-100 shadow-xl">
+            <div class="card-body p-2.5">
+                <table class="table w-full text-lg" id="files_table">
+                    <!-- head -->
+                    <thead>
+                        <tr>
+                            <th class="text-lg bg-gray-200">檔案名稱</th>
+                            <th class="text-lg bg-gray-200">訊息</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, vuln_information in vuln_informations.items() %}
+                        <tr>
+                            <td>{{ vuln_information['name'] }}</td>
+                            <td>{{ vuln_information['message']}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>

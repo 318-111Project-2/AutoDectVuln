@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS files;
 DROP TABLE IF EXISTS results;
 DROP TABLE IF EXISTS vulns;
 DROP TABLE IF EXISTS process;
+DROP TABLE IF EXISTS information;
 
 create table analyzes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,3 +46,16 @@ create table process (
     process text NOT NULL,
     vuln_func TEXT DEFAULT NULL
 );
+
+create table information (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name TEXT NOT NULL,
+    message TEXT DEFAULT NULL
+);
+
+INSERT into information (name, message) values ('StackOverFlow', '有關該漏洞的詳細資訊，請參考：https://cwe.mitre.org/data/definitions/121.html');
+INSERT into information (name, message) values ('FormatStringBug', '有關該漏洞的詳細資訊，請參考：https://cwe.mitre.org/data/definitions/134.html');
+INSERT into information (name, message) values ('HeapOverFlow', '有關該漏洞的詳細資訊，請參考：https://cwe.mitre.org/data/definitions/122.html');
+INSERT into information (name, message) values ('UseAfterFree', '有關該漏洞的詳細資訊，請參考：https://cwe.mitre.org/data/definitions/416.html');
+INSERT into information (name, message) values ('DoubleFree', '有關該漏洞的詳細資訊，請參考：https://cwe.mitre.org/data/definitions/415.html');
