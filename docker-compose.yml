@@ -5,5 +5,4 @@ services:
     image: autodetectvuln
     build: .
     ports:
-      - "8081:8080"
-    tty: true
+      - 8081:8080
