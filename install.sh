@@ -1,4 +1,7 @@
 #! /bin/bash
 
-# install needed python package 
-pip install -r requirements.txt --default-timeout=60
+cd /home/lib/web
+
+python3 app/database/init_db.py
+
+python3 web.py

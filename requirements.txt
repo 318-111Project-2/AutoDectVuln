@@ -2,3 +2,4 @@ angr==9.2.30
 Flask==2.2.3
 pwntools==4.9.0
 filetype==1.2.0
+pyfiglet==0.8.post1
