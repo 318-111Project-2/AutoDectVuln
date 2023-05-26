@@ -2,15 +2,14 @@
 
 ## Getting Started
 
-- Ubuntu 20.04
-  ```
-  ./install.sh
-  ```
-
 - docker
+
   ```sh
-  # up
-  docker-compose up
+  # run docker container in background
+  sudo docker compose up -d
+
+  # stop docker container
+  sudo docker compose stop
 
   # run with interactive interface
   sudo docker run -it autodetectvuln /bin/bash

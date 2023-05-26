@@ -16,5 +16,5 @@ RUN apt-get update && \
 WORKDIR /home/lib/web/
 
 RUN python3 app/database/init_db.py
-# RUN python3 web.py
-CMD ["python3","web.py"]
+
+CMD ["python3", "web.py"]
