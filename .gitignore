@@ -1,7 +1,6 @@
 *.i64
 report*.txt
 **/__pycache__/*.pyc
-**/build/*
 **.vscode/
 **/uploads/*
 *.swp
