@@ -10,4 +10,4 @@ report*.txt
 **/database.db
 **/temp/*
 DEMO_ENVIRONMENT/demo 
-DEMO_ENVIRONMENT/report/*
+DEMO_ENVIRONMENT/report/report.txt
