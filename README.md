@@ -75,12 +75,12 @@
 
 - Testing
 
-  - [ ] Organize test sample
-  - [ ] Testing
+  - [x] Organize test sample
+  - [x] Testing
 
 - Report File
 
   - [x] Report File function
 
 - Demo
-  - [ ] Demo
+  - [x] Demo
